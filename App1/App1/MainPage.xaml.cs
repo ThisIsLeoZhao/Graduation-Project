@@ -30,13 +30,9 @@ namespace App1
     public sealed partial class MainPage : Page
     {
         private KinectSensor sensor;
-        //private InfraredFrameReader irReader;
-        //private ushort[] irData;
-        private byte[] irDataConverted;
-        private WriteableBitmap irBitmap;
 
         private Body[] bodies;
-        private MultiSourceFrameReader msfr;
+        private BodyFrameReader bfr;
         private List<Tuple<JointType, JointType>> bones;
 
         public MainPage()
@@ -82,82 +78,71 @@ namespace App1
 
             this.Loaded += MainPage_Loaded;
         }
-
+ 
         
 
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             sensor = KinectSensor.GetDefault();
-//            irReader = sensor.InfraredFrameSource.OpenReader();
-//            FrameDescription fd = sensor.InfraredFrameSource.FrameDescription;
-//            irData = new ushort[fd.LengthInPixels];
-//            irDataConverted = new byte[fd.LengthInPixels * 4];
-//            irBitmap = new WriteableBitmap(fd.Width, fd.Height);
-//            image.Source = irBitmap;
 
             bodies = new Body[6];
-            msfr = sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Body | FrameSourceTypes.Infrared);
+            bfr = sensor.BodyFrameSource.OpenReader();
 
             sensor.Open();
-            msfr.MultiSourceFrameArrived += msfr_MultiSourceFrameArrived;
+            bfr.FrameArrived += bfr_FrameArrived;
 
         }
 
-        private void msfr_MultiSourceFrameArrived(MultiSourceFrameReader sender, MultiSourceFrameArrivedEventArgs args)
+        private void bfr_FrameArrived(BodyFrameReader sender, BodyFrameArrivedEventArgs args)
         {
-            using (MultiSourceFrame msf = args.FrameReference.AcquireFrame())
+            using (BodyFrame bodyFrame = args.FrameReference.AcquireFrame())
             {
-                if (msf != null)
+                if (bodyFrame != null)
                 {
-                    using (BodyFrame bodyFrame = msf.BodyFrameReference.AcquireFrame())
+                    bodyFrame.GetAndRefreshBodyData(bodies);
+                    bodyCanvas.Children.Clear();
+
+                    foreach (var body in bodies)
                     {
-                        using (InfraredFrame irFrame = msf.InfraredFrameReference.AcquireFrame())
+                        if (!body.IsTracked)
                         {
-                            if (bodyFrame != null && irFrame != null)
+                            continue;
+                        }
+
+                        var jointsDic = body.Joints;
+                        Dictionary<JointType, DepthSpacePoint> joints = new Dictionary<JointType, DepthSpacePoint>(); 
+                        foreach (var joint in jointsDic)
+                        {
+                            if (joint.Value.TrackingState == TrackingState.NotTracked)
                             {
-                                bodyFrame.GetAndRefreshBodyData(bodies);
-                                bodyCanvas.Children.Clear();
-
-                                foreach (Body body in bodies)
-                                {
-                                    if (!body.IsTracked) continue;
-
-                                    IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
-                                    Dictionary<JointType, DepthSpacePoint> jointPoints = new Dictionary<JointType, DepthSpacePoint>();
-
-                                    foreach (KeyValuePair<JointType, Joint> joint in joints)
-                                    {
-                                        Joint jointVal = joint.Value;
-
-                                        if (jointVal.TrackingState != TrackingState.Tracked)
-                                        {
-                                            continue;
-                                        }
-
-                                        DepthSpacePoint dsp =
-                                            sensor.CoordinateMapper.MapCameraPointToDepthSpace(jointVal.Position);
-
-                                        jointPoints.Add(joint.Key, dsp);
-                                        
-                                    }
-                                    DrawBones(jointPoints);
-                                    
-                                    foreach (DepthSpacePoint p in jointPoints.Values)
-                                    {
-                                        Ellipse circle = new Ellipse() { Width = 20, Height = 20, Fill = new SolidColorBrush(Color.FromArgb(255, 255, 0, 0)) };
-                                        bodyCanvas.Children.Add(circle);
-
-                                        Canvas.SetLeft(circle, p.X - 10);
-                                        Canvas.SetTop(circle, p.Y - 10);
-                                        
-                                    }
-//                                    Canvas.SetLeft(circle, dsp.X - 10);
-//                                    Canvas.SetTop(circle, dsp.Y - 10);
-                                }
+                                continue;
                             }
+
+                            DepthSpacePoint point =
+                                sensor.CoordinateMapper.MapCameraPointToDepthSpace(joint.Value.Position);
+
+                            joints.Add(joint.Key, point);
+                        }
+
+                        DrawBones(joints);
+
+                        foreach (var joint in joints.Values)
+                        {
+                            Ellipse circle = new Ellipse
+                            {
+                                Width = 10,
+                                Height = 10,
+
+                                Fill = new SolidColorBrush(Color.FromArgb(255, 100, 255, 100))
+                            };
+
+                            bodyCanvas.Children.Add(circle);
+                            Canvas.SetLeft(circle, joint.X - 5);
+                            Canvas.SetTop(circle, joint.Y - 5);
                         }
                     }
+
                 }
             }
         }
@@ -184,18 +169,6 @@ namespace App1
                     StrokeThickness = 2
 
                 };
-
-                Line myLine1 = new Line
-                {
-                    X1 = 0,
-                    X2 = 0,
-                    Y1 = 100,
-                    Y2 = 100,
-                    Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 255, 255)),
-                    StrokeThickness = 2
-
-                };
-
 
                 bodyCanvas.Children.Add(myLine);
 
