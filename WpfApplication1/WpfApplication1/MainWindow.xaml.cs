@@ -1,34 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.Diagnostics;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
-using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Navigation;
-
-using Windows.UI.Xaml.Media.Imaging;
-using WindowsPreview.Kinect;
-using Microsoft.Kinect.VisualGestureBuilder;
-
-using Windows.UI.Xaml.Shapes;
-using Windows.UI;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
+using Microsoft.Kinect;
+//using Microsoft.Kinect.VisualGestureBuilder;
 
-namespace App1
+
+
+namespace WpfApplication1
 {
+
     /// <summary>
-    /// An empty page that can be used on its own or navigated to within a Frame.
+    /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public sealed partial class MainPage : Page
+    public partial class MainWindow : Window
     {
         private KinectSensor sensor;
 
@@ -36,14 +35,19 @@ namespace App1
         private BodyFrameReader bfr;
         private List<Tuple<JointType, JointType>> bones;
 
-        
-        public MainPage()
+        [DllImport("User32.dll")]
+        private static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("User32.dll")]
+        private static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
+
+        private const int MOUSEEVENTF_LEFTDOWN = 0x02;
+        private const int MOUSEEVENTF_LEFTUP = 0x04;
+
+        public MainWindow()
         {
-            this.InitializeComponent();
-
-            Window.Current.CoreWindow.PointerCursor = 
-                new Windows.UI.Core.CoreCursor(Windows.UI.Core.CoreCursorType.Hand, 1);
-
+            InitializeComponent();
+            //moveCursor();
 
             // a bone defined as a line between two joints
             this.bones = new List<Tuple<JointType, JointType>>();
@@ -84,9 +88,6 @@ namespace App1
 
             this.Loaded += MainPage_Loaded;
         }
- 
-        
-
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -100,7 +101,7 @@ namespace App1
 
         }
 
-        private void bfr_FrameArrived(BodyFrameReader sender, BodyFrameArrivedEventArgs args)
+        private void bfr_FrameArrived(object o, BodyFrameArrivedEventArgs args)
         {
             using (BodyFrame bodyFrame = args.FrameReference.AcquireFrame())
             {
@@ -117,11 +118,12 @@ namespace App1
                         }
 
                         var jointsDic = body.Joints;
-                        Dictionary<JointType, DepthSpacePoint> joints = new Dictionary<JointType, DepthSpacePoint>(); 
+                        Dictionary<JointType, DepthSpacePoint> joints = new Dictionary<JointType, DepthSpacePoint>();
                         foreach (var joint in jointsDic)
                         {
                             if (joint.Value.TrackingState == TrackingState.NotTracked)
                             {
+                                Debug.Print("Hey");
                                 continue;
                             }
 
@@ -132,7 +134,8 @@ namespace App1
                         }
 
                         DrawBones(joints);
-
+                        showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
+                            body.HandRightState, body.HandLeftState);
                         foreach (var joint in joints.Values)
                         {
                             Ellipse circle = new Ellipse
@@ -147,10 +150,59 @@ namespace App1
                             Canvas.SetLeft(circle, joint.X - 5);
                             Canvas.SetTop(circle, joint.Y - 5);
                         }
+
+                        //Debug.Print(joints.ContainsKey(JointType.HandRight).ToString());
+                        if (joints.ContainsKey(JointType.HandRight))
+                        {
+                            int a = (int) (joints[JointType.HandRight].X / 514.0 * SystemParameters.PrimaryScreenWidth);
+                            int b = (int)(joints[JointType.HandRight].Y / 424.0 * SystemParameters.PrimaryScreenHeight * 2);
+
+                            Debug.Print(a.ToString());
+                            Debug.Print(b.ToString());
+
+//                            Debug.Print(SystemParameters.PrimaryScreenWidth.ToString("N"));
+//                            Debug.Print(SystemParameters.PrimaryScreenHeight.ToString("N"));
+
+                            moveCursor(a, b);
+                            
+                            if (body.HandRightState == HandState.Closed)
+                            {
+                                Debug.Print("Closed");
+                                leftClick(a, b); 
+                            }
+                        }
+
                     }
 
                 }
             }
+        }
+
+        private void showHands(DepthSpacePoint rightHand, DepthSpacePoint leftHand,
+            HandState rightHandState, HandState leftHandState)
+        {
+            Brush openBrush = new SolidColorBrush(Color.FromArgb(100, 120, 5, 250));
+            Brush closeBrush = new SolidColorBrush(Color.FromArgb(100, 0, 200, 250));
+
+            Ellipse rightHandEllipse = new Ellipse()
+            {
+                Height = 50,
+                Width = 50,
+                Fill = (rightHandState == HandState.Closed ? closeBrush : openBrush)
+            };
+            bodyCanvas.Children.Add(rightHandEllipse);
+            Canvas.SetLeft(rightHandEllipse, rightHand.X - 25);
+            Canvas.SetTop(rightHandEllipse, rightHand.Y - 25);
+
+            Ellipse leftHandEllipse = new Ellipse()
+            {
+                Height = 50,
+                Width = 50,
+                Fill = (leftHandState == HandState.Closed ? closeBrush : openBrush)
+            };
+            bodyCanvas.Children.Add(leftHandEllipse);
+            Canvas.SetLeft(leftHandEllipse, leftHand.X - 25);
+            Canvas.SetTop(leftHandEllipse, leftHand.Y - 25);
         }
 
         private void DrawBones(Dictionary<JointType, DepthSpacePoint> jointPoints)
@@ -181,27 +233,15 @@ namespace App1
             }
         }
 
-//        private void irReader_FrameArrived(InfraredFrameReader sender, InfraredFrameArrivedEventArgs args)
-//        {
-//            using (InfraredFrame irFrame = args.FrameReference.AcquireFrame())
-//            {
-//                if (irFrame != null)
-//                {
-//                    irFrame.CopyFrameDataToArray(irData);
-//                    for (int i = 0; i < irData.Length; i++)
-//                    {
-//                        byte intensity = (byte)(irData[i] >> 8);
-//
-//                        irDataConverted[i * 4] = intensity;
-//                        irDataConverted[i * 4 + 1] = intensity;
-//                        irDataConverted[i * 4 + 2] = intensity;
-//                        irDataConverted[i * 4 + 3] = 255;
-//                    }
-//                    irDataConverted.CopyTo(irBitmap.PixelBuffer);
-//                    irBitmap.Invalidate();
-//
-//                }
-//            }
-//        }
+        private void moveCursor(int a, int b)
+        {
+            SetCursorPos(a, b);
+        }
+
+        private void leftClick(int a, int b)
+        {
+            mouse_event(MOUSEEVENTF_LEFTDOWN, a, b, 0, 0);
+            mouse_event(MOUSEEVENTF_LEFTUP, a, b, 0, 0);
+        }
     }
 }
