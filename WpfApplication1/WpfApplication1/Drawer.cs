@@ -9,8 +9,10 @@ namespace WpfApplication1
 {
     public class Drawer
     {
-        private readonly List<Tuple<JointType, JointType>> bones; 
-        public Drawer()
+        private readonly List<Tuple<JointType, JointType>> bones;
+        private Canvas bodyCanvas;
+
+        public Drawer(Canvas canvas)
         {
             // a bone defined as a line between two joints
             this.bones = new List<Tuple<JointType, JointType>>();
@@ -48,23 +50,25 @@ namespace WpfApplication1
             this.bones.Add(new Tuple<JointType, JointType>(JointType.HipLeft, JointType.KneeLeft));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft));
             this.bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
+
+            bodyCanvas = canvas;
         }
         
 
-        public void showHands(DepthSpacePoint rightHand, DepthSpacePoint leftHand, HandState rightHandState, HandState leftHandState, Canvas bodyCanvas)
+        public void showHands(DepthSpacePoint rightHand, DepthSpacePoint leftHand, HandState rightHandState, HandState leftHandState)
         {
             Brush openBrush = new SolidColorBrush(Color.FromArgb(100, 120, 5, 250));
             Brush closeBrush = new SolidColorBrush(Color.FromArgb(100, 0, 200, 250));
 
             Brush rightBrush = (rightHandState == HandState.Closed ? closeBrush : openBrush);
-            drawCircle(50, rightHand.X, rightHand.Y, rightBrush, bodyCanvas);
+            drawCircle(50, rightHand.X, rightHand.Y, rightBrush);
 
             Brush leftBrush = (leftHandState == HandState.Closed ? closeBrush : openBrush);
-            drawCircle(50, leftHand.X, leftHand.Y, leftBrush, bodyCanvas);
+            drawCircle(50, leftHand.X, leftHand.Y, leftBrush);
             
         }
 
-        public void drawBones(Dictionary<JointType, DepthSpacePoint> jointPoints, Canvas bodyCanvas)
+        public void drawBones(Dictionary<JointType, DepthSpacePoint> jointPoints)
         {
             foreach (Tuple<JointType, JointType> bone in bones)
             {
@@ -92,7 +96,7 @@ namespace WpfApplication1
             }
         }
 
-        public void drawCircle(int radius, float X, float Y, Brush color, Canvas bodyCanvas)
+        public void drawCircle(int radius, float X, float Y, Brush color)
         {
             Ellipse leftHandEllipse = new Ellipse()
             {
@@ -103,6 +107,19 @@ namespace WpfApplication1
             bodyCanvas.Children.Add(leftHandEllipse);
             Canvas.SetLeft(leftHandEllipse, X - radius / 2);
             Canvas.SetTop(leftHandEllipse, Y - radius / 2);
+        }
+
+        public void drawSkeleton(Body body, Dictionary<JointType, DepthSpacePoint> joints)
+        {
+            drawBones(joints);
+
+            foreach (var joint in joints.Values)
+            {
+                drawCircle(10, joint.X, joint.Y, new SolidColorBrush(Color.FromArgb(255, 100, 255, 100)));
+            }
+
+            showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
+                body.HandRightState, body.HandLeftState);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -17,9 +18,10 @@ using System.Windows.Shapes;
 
 
 using Microsoft.Kinect;
+using Microsoft.Kinect.Wpf.Controls;
+
+
 //using Microsoft.Kinect.VisualGestureBuilder;
-
-
 
 namespace WpfApplication1
 {
@@ -36,21 +38,25 @@ namespace WpfApplication1
 
         private Drawer drawer;
         private Manipulation man;
+        private EngagementManager eManager;
         
 
-        private int offset = 0;
+        
 
         public MainWindow()
         {
-            InitializeComponent();
-            drawer = new Drawer();
+            this.InitializeComponent();
+            drawer = new Drawer(bodyCanvas);
             man = new Manipulation();
+            eManager = new EngagementManager();
 
-            //moveCursor();
-
-            
+//            KinectRegion.SetKinectRegion(this, kinectRegion);
+//
+//            this.kinectRegion.KinectSensor = KinectSensor.GetDefault();
+//            
 
             this.Loaded += MainPage_Loaded;
+            this.Closing += MainWindow_Closing;
         }
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -63,7 +69,6 @@ namespace WpfApplication1
             sensor.Open();
             bfr.FrameArrived += bfr_FrameArrived;
             
-
         }
 
         private void bfr_FrameArrived(object o, BodyFrameArrivedEventArgs args)
@@ -74,83 +79,79 @@ namespace WpfApplication1
                 {
                     return;
                 }
+                
                 bodyFrame.GetAndRefreshBodyData(bodies);
                 bodyCanvas.Children.Clear();
 
-                foreach (var body in bodies)
+                foreach (var body in bodies.Where(body => body.IsTracked))
                 {
-                    if (!body.IsTracked)
+                    if (!eManager.users.Contains(body))
                     {
-                        continue;
+                        eManager.users.Add(body);
+                    }
+                    
+
+                    var joints = CoordinateConverter.convertJointsToPoints(body.Joints, sensor);
+                    drawer.drawSkeleton(body, joints);
+                }
+
+                eManager.checkEngage();
+                if (!eManager.engage)
+                {
+                    return;
+                }
+
+                CameraSpacePoint handRightPoint = eManager.GetHandRightPoint();
+
+                int[] leftPin = CoordinateConverter.cameraPointToScreen(handRightPoint.X, handRightPoint.Y);
+                
+
+                Debug.Print("handRightPoint: " + handRightPoint.X + ", " + handRightPoint.Y + ", " + handRightPoint.Z);
+                Debug.Print("cursor: " + leftPin[0] + ", " + leftPin[1]);
+//
+//                                            Debug.Print(SystemParameters.PrimaryScreenWidth.ToString("N"));
+//                                            Debug.Print(SystemParameters.PrimaryScreenHeight.ToString("N"));
+
+                MyCursor.moveCursor(leftPin[0], leftPin[1]);
+
+                if (eManager.getEngager().HandRightState == HandState.Closed)
+                {
+                    Debug.Print("Closed");
+                    MyCursor.leftClick(leftPin[0], leftPin[1]);
+
+                    if (eManager.getEngager().HandLeftState == HandState.Closed)
+                    {
+                        var joints = CoordinateConverter.convertJointsToPoints(eManager.getEngager().Joints, sensor);
+
+                        int[] rightPin = CoordinateConverter.cameraPointToScreen(joints[JointType.HandLeft].X,
+                            joints[JointType.HandLeft].Y);
+
+                        int dis = (int)Math.Sqrt(Math.Pow((rightPin[0] - leftPin[0]), 2) + 
+                            Math.Pow((rightPin[1] - leftPin[1]), 2));
+
+                        MyWindow.moveWindow(dis);
                     }
 
-                    var jointsDic = body.Joints;
-                    Dictionary<JointType, DepthSpacePoint> joints = new Dictionary<JointType, DepthSpacePoint>();
-                    foreach (var joint in jointsDic)
-                    {
-                        if (joint.Value.TrackingState == TrackingState.NotTracked)
-                        {
-                            Debug.Print("Hey");
-                            continue;
-                        }
-
-                        DepthSpacePoint point =
-                            sensor.CoordinateMapper.MapCameraPointToDepthSpace(joint.Value.Position);
-
-                        joints.Add(joint.Key, point);
-                    }
-                        
-                    drawer.drawBones(joints, bodyCanvas);
-                    drawer.showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
-                        body.HandRightState, body.HandLeftState, bodyCanvas);
-
-                    foreach (var joint in joints.Values)
-                    {
-                        drawer.drawCircle(10, joint.X, joint.Y, new SolidColorBrush(Color.FromArgb(255, 100, 255, 100)), bodyCanvas);
-                    }
-
-                    if (!joints.ContainsKey(JointType.HandRight))
-                    {
-                        continue;
-                    }
-
-                    int a = (int) (joints[JointType.HandRight].X / 514.0 * SystemParameters.PrimaryScreenWidth);
-                    int b = (int)(joints[JointType.HandRight].Y / 424.0 * SystemParameters.PrimaryScreenHeight * 2);
-
-//                            Debug.Print(a.ToString());
-//                            Debug.Print(b.ToString());
-
-//                            Debug.Print(SystemParameters.PrimaryScreenWidth.ToString("N"));
-//                            Debug.Print(SystemParameters.PrimaryScreenHeight.ToString("N"));
-
-                    man.moveCursor(a, b);
-                            
-                    if (body.HandRightState == HandState.Closed)
-                    {
-                        Debug.Print("Closed");
-                        man.leftClick(a, b);
-
-                        if (body.HandLeftState == HandState.Closed)
-                        {
-                            int la = (int)(joints[JointType.HandLeft].X / 514.0 * SystemParameters.PrimaryScreenWidth);
-                            int lb = (int)(joints[JointType.HandLeft].Y / 424.0 * SystemParameters.PrimaryScreenHeight * 2);
-                                    
-                            int dis = (int) Math.Sqrt(Math.Pow((la - a), 2) + Math.Pow((lb - b), 2));
-
-                            man.moveWindow(dis);
-//                                    if (offset < 500)
-//                                    {
-//                                        offset +=  50;
-//                                    }
-                            Debug.Print(offset.ToString());
-
-                        }
-
-                    }
                 }
             }
         }
-         
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e)
+        {
+            if (this.bfr != null)
+            {
+                // BodyFrameReader is IDisposable
+                this.bfr.Dispose();
+                this.bfr = null;
+            }
+
+            if (this.sensor != null)
+            {
+                this.sensor.Close();
+                this.sensor = null;
+            }
+        }
+
         
     }
 }
