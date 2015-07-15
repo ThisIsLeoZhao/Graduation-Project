@@ -11,8 +11,10 @@ namespace WpfApplication1
         public static double Ey;
         public static double Ez;
 
-        private const int screenWidth = 1920;
-        private const int screenHeight = 1080;
+        public const int screenWidth = 1920;
+        public const int screenHeight = 1080;
+
+        public static KinectSensor Sensor { get; set; }
 
         private static float[] convertToPan(float X, float Y)
         {
@@ -33,9 +35,8 @@ namespace WpfApplication1
             };
         }
 
-        public static Dictionary<JointType, DepthSpacePoint> convertJointsToPoints(
-            IReadOnlyDictionary<JointType, Joint> jointsDic, 
-            KinectSensor sensor)
+        public static Dictionary<JointType, DepthSpacePoint> convertJointsToDSPoints(
+            IReadOnlyDictionary<JointType, Joint> jointsDic)
         {
             Dictionary<JointType, DepthSpacePoint> joints = new Dictionary<JointType, DepthSpacePoint>();
             foreach (var joint in jointsDic)
@@ -46,18 +47,17 @@ namespace WpfApplication1
                     continue;
                 }
 
-                DepthSpacePoint point =
-                    sensor.CoordinateMapper.MapCameraPointToDepthSpace(joint.Value.Position);
-                if (joint.Key == JointType.HandRight)
-                {
-                    Debug.Print("Original data: " + joint.Value.Position.X + ", " + joint.Value.Position.Y + ", " + joint.Value.Position.Z);
-                    Debug.Print("Converted data: " + point.X + ", " + point.Y);
-
-                }
+                var point = JointToDepthSpace(joint.Value);
 
                 joints.Add(joint.Key, point);
             }
             return joints;
+        }
+
+        public static DepthSpacePoint JointToDepthSpace(Joint joint)
+        {
+            DepthSpacePoint point = Sensor.CoordinateMapper.MapCameraPointToDepthSpace(joint.Position);
+            return point;
         }
     }
 }

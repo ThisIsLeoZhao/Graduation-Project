@@ -37,26 +37,24 @@ namespace WpfApplication1
         private BodyFrameReader bfr;
 
         private Drawer drawer;
-        private Manipulation man;
+        private Manipulator man;
         private EngagementManager eManager;
-        
-
-        
+        private EngagerTracker eTracker;
+        private GestureRecogniser recogniser;
 
         public MainWindow()
         {
-            this.InitializeComponent();
+            InitializeComponent();
+
             drawer = new Drawer(bodyCanvas);
-            man = new Manipulation();
             eManager = new EngagementManager();
+            eTracker = new EngagerTracker();
 
-//            KinectRegion.SetKinectRegion(this, kinectRegion);
-//
-//            this.kinectRegion.KinectSensor = KinectSensor.GetDefault();
-//            
+            man = new Manipulator(eTracker);
+            recogniser = new GestureRecogniser(eTracker);
 
-            this.Loaded += MainPage_Loaded;
-            this.Closing += MainWindow_Closing;
+            Loaded += MainPage_Loaded;
+            Closing += MainWindow_Closing;
         }
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -67,6 +65,8 @@ namespace WpfApplication1
             bfr = sensor.BodyFrameSource.OpenReader();
 
             sensor.Open();
+            CoordinateConverter.Sensor = sensor;
+
             bfr.FrameArrived += bfr_FrameArrived;
             
         }
@@ -90,49 +90,19 @@ namespace WpfApplication1
                         eManager.users.Add(body);
                     }
                     
-
-                    var joints = CoordinateConverter.convertJointsToPoints(body.Joints, sensor);
+                    var joints = CoordinateConverter.convertJointsToDSPoints(body.Joints);
                     drawer.drawSkeleton(body, joints);
                 }
 
-                eManager.checkEngage();
-                if (!eManager.engage)
+                if (!eManager.IsEngage)
                 {
                     return;
                 }
 
-                CameraSpacePoint handRightPoint = eManager.GetHandRightPoint();
+                eTracker.Engager = eManager.Engager;
+                Gestures recognisedGestures = recogniser.recognise();
 
-                int[] leftPin = CoordinateConverter.cameraPointToScreen(handRightPoint.X, handRightPoint.Y);
-                
-
-                Debug.Print("handRightPoint: " + handRightPoint.X + ", " + handRightPoint.Y + ", " + handRightPoint.Z);
-                Debug.Print("cursor: " + leftPin[0] + ", " + leftPin[1]);
-//
-//                                            Debug.Print(SystemParameters.PrimaryScreenWidth.ToString("N"));
-//                                            Debug.Print(SystemParameters.PrimaryScreenHeight.ToString("N"));
-
-                MyCursor.moveCursor(leftPin[0], leftPin[1]);
-
-                if (eManager.getEngager().HandRightState == HandState.Closed)
-                {
-                    Debug.Print("Closed");
-                    MyCursor.leftClick(leftPin[0], leftPin[1]);
-
-                    if (eManager.getEngager().HandLeftState == HandState.Closed)
-                    {
-                        var joints = CoordinateConverter.convertJointsToPoints(eManager.getEngager().Joints, sensor);
-
-                        int[] rightPin = CoordinateConverter.cameraPointToScreen(joints[JointType.HandLeft].X,
-                            joints[JointType.HandLeft].Y);
-
-                        int dis = (int)Math.Sqrt(Math.Pow((rightPin[0] - leftPin[0]), 2) + 
-                            Math.Pow((rightPin[1] - leftPin[1]), 2));
-
-                        MyWindow.moveWindow(dis);
-                    }
-
-                }
+                man.reactGesture(recognisedGestures);
             }
         }
 

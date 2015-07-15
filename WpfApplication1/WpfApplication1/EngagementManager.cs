@@ -10,16 +10,25 @@ namespace WpfApplication1
     {
         public IList<Body> users = new List<Body>();
 
-        public bool engage = false;
+        private bool engage = false;
 
         private int engageUserIndex = -1;
         private int[] holdTime = new int[6];
-        private CameraSpacePoint handRightPoint;
 
         double Eh;
         double Ew;
 
-        public void checkEngage()
+        public bool IsEngage
+        {
+            get
+            {
+                checkEngage();
+                return engage;
+            }
+
+        }
+
+        private void checkEngage()
         {
             for (int i = 0; i < users.Count; i++)
             {
@@ -41,7 +50,7 @@ namespace WpfApplication1
                     CoordinateConverter.Ex = user.Joints[JointType.HandRight].Position.X;
                     CoordinateConverter.Ey = user.Joints[JointType.HandRight].Position.Y;
                     CoordinateConverter.Ez = user.Joints[JointType.HandRight].Position.Z;
-                    
+
                     Eh = CoordinateConverter.Ez * Math.Tan(Math.PI * (30.0 / 180));
                     Ew = CoordinateConverter.Ez * Math.Tan(Math.PI * (35.0 / 180));
 
@@ -49,7 +58,7 @@ namespace WpfApplication1
                     {
                         holdTime[j] = 0;
                     }
-                    Debug.Print("Engage " + CoordinateConverter.Ex + ", " + 
+                    Debug.Print("Engage " + CoordinateConverter.Ex + ", " +
                         CoordinateConverter.Ey + ", " + CoordinateConverter.Ez);
 
                     break;
@@ -76,21 +85,9 @@ namespace WpfApplication1
                 }
             }
 
-            
+
         }
 
-        public CameraSpacePoint GetHandRightPoint()
-        {
-            handRightPoint.X = users[engageUserIndex].Joints[JointType.HandRight].Position.X;
-            handRightPoint.Y = users[engageUserIndex].Joints[JointType.HandRight].Position.Y;
-            handRightPoint.Z = users[engageUserIndex].Joints[JointType.HandRight].Position.Z;
-
-            return handRightPoint;
-        }
-
-        public Body getEngager()
-        {
-            return users[engageUserIndex];
-        }
+        public Body Engager => users[engageUserIndex];
     }
 }
