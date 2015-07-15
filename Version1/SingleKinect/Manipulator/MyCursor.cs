@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace WpfApplication1
+namespace SingleKinect.Manipulator
 {
     public class MyCursor
     {
@@ -12,7 +12,5 @@ namespace WpfApplication1
 
         [DllImport("User32.dll")]
         internal static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);
-        
-        
     }
 }

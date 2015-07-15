@@ -1,44 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Kinect;
+using SingleKinect.EngagementManager;
+using SingleKinect.MyUtilities;
 
-namespace WpfApplication1
+namespace SingleKinect.GestureRecogniser
 {
-    public enum Gestures
-    {
-        Minimise,
-        MouseDown,
-        MouseUp,
-        Scale,
-        Move,
-        None
-    }
-
-    class GestureRecogniser
+    public class GestureRecogniser
     {
         private const int MINIMISE_TRIGGER = 100;
         private const double SCALE_TRIGGER = 0.05;
-
-        private EngagerTracker tracker;
-
-        private Joint? preHandRightPoint = null;
-        private Joint curHandRightPoint;
+        private readonly EngagerTracker tracker;
         private Joint curHandLeftPoint;
-
-        private float moveDownDis = 0;
-
+        private Joint curHandRightPoint;
         private bool isPressed;
-
-        public Body Engager => tracker.Engager;
+        private float moveDownDis;
+        private Joint? preHandRightPoint;
 
         public GestureRecogniser(EngagerTracker eTracker)
         {
             tracker = eTracker;
         }
+
+        public Body Engager => tracker.Engager;
 
         public Gestures recognise()
         {
@@ -87,7 +71,6 @@ namespace WpfApplication1
 
 
                 return Gestures.Move;
-
             }
 
 
@@ -97,10 +80,10 @@ namespace WpfApplication1
         private Gestures monitorBothHandsClosed()
         {
             if (curHandRightPoint.Position.Y < preHandRightPoint.Value.Position.Y &&
-                (int)curHandLeftPoint.Position.Y == (int)curHandRightPoint.Position.Y)
+                (int) curHandLeftPoint.Position.Y == (int) curHandRightPoint.Position.Y)
             {
                 moveDownDis += CoordinateConverter.JointToDepthSpace(curHandRightPoint).Y -
-                    CoordinateConverter.JointToDepthSpace(preHandRightPoint.Value).Y;
+                               CoordinateConverter.JointToDepthSpace(preHandRightPoint.Value).Y;
 
                 Debug.Print("moveDownDis: {0}", moveDownDis);
                 if (moveDownDis > MINIMISE_TRIGGER)
@@ -109,7 +92,6 @@ namespace WpfApplication1
                     moveDownDis = 0;
 
                     return Gestures.Minimise;
-
                 }
 
                 preHandRightPoint = curHandRightPoint;
@@ -121,7 +103,6 @@ namespace WpfApplication1
 
 
             return Gestures.None;
-            
         }
 
         private bool withinRange(float n1, float n2, double range)
@@ -130,9 +111,8 @@ namespace WpfApplication1
             {
                 range = -range;
             }
-            
+
             return n1 > n2 - range || n1 < n2 + range;
         }
-
     }
 }

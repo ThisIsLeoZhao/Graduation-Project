@@ -1,12 +1,10 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Windows;
+﻿using System.Diagnostics;
 using Microsoft.Kinect;
+using SingleKinect.EngagementManager;
+using SingleKinect.GestureRecogniser;
+using SingleKinect.MyUtilities;
 
-namespace WpfApplication1
+namespace SingleKinect.Manipulator
 {
     public class Manipulator
     {
@@ -14,7 +12,7 @@ namespace WpfApplication1
 //        private float previousHandPosition;
 //        private float currentHandPosition;
 
-        private EngagerTracker tracker;
+        private readonly EngagerTracker tracker;
 
         public Manipulator(EngagerTracker eTracker)
         {
@@ -23,20 +21,19 @@ namespace WpfApplication1
 
         public void minimiseCurrentWindow()
         {
-            
-            IntPtr currentWindow = MyWindow.GetForegroundWindow();
+            var currentWindow = MyWindow.GetForegroundWindow();
 
             MyWindow.ShowWindow(currentWindow, 6);
         }
 
         public void scaleWindow()
         {
-            CameraSpacePoint handRightPoint = tracker.Engager.Joints[JointType.HandRight].Position;
+            var handRightPoint = tracker.Engager.Joints[JointType.HandRight].Position;
 
-            CameraSpacePoint handLeftPoint = tracker.Engager.Joints[JointType.HandLeft].Position;
+            var handLeftPoint = tracker.Engager.Joints[JointType.HandLeft].Position;
 //            int[] rightPin = CoordinateConverter.cameraPointToScreen(handLeftPoint.X, handLeftPoint.Y);
 
-            int dis = (int) (tracker.ScaleDepth *　200);
+            var dis = (int) (tracker.ScaleDepth*200);
             Debug.Print("dis {0}", dis);
 
             MyWindow.moveWindow(dis);
@@ -59,7 +56,6 @@ namespace WpfApplication1
             MyCursor.mouse_event(MyCursor.MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
         }
 
-
         public void reactGesture(Gestures recognisedGestures)
         {
             if (recognisedGestures != Gestures.Move)
@@ -67,8 +63,8 @@ namespace WpfApplication1
                 Debug.Print("Gesture {0}", recognisedGestures);
             }
 
-            CameraSpacePoint handRightPoint = tracker.Engager.Joints[JointType.HandRight].Position;
-            int[] leftPin = CoordinateConverter.cameraPointToScreen(handRightPoint.X, handRightPoint.Y);
+            var handRightPoint = tracker.Engager.Joints[JointType.HandRight].Position;
+            var leftPin = CoordinateConverter.cameraPointToScreen(handRightPoint.X, handRightPoint.Y);
 
             switch (recognisedGestures)
             {
@@ -92,7 +88,7 @@ namespace WpfApplication1
                 case Gestures.Scale:
                     scaleWindow();
                     break;
-                    
+
                 default:
                     //leftUp(0, 0);
                     break;

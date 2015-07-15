@@ -1,57 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
+﻿using System.ComponentModel;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-
 using Microsoft.Kinect;
-using Microsoft.Kinect.Wpf.Controls;
-
+using SingleKinect.EngagementManager;
+using SingleKinect.MyUtilities;
 
 //using Microsoft.Kinect.VisualGestureBuilder;
 
-namespace WpfApplication1
+namespace SingleKinect
 {
-
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        private KinectSensor sensor;
-
-        private Body[] bodies;
+        private readonly Drawer drawer;
+        private readonly EngagementManager.EngagementManager eManager;
+        private readonly EngagerTracker eTracker;
+        private readonly Manipulator.Manipulator man;
+        private readonly GestureRecogniser.GestureRecogniser recogniser;
         private BodyFrameReader bfr;
-
-        private Drawer drawer;
-        private Manipulator man;
-        private EngagementManager eManager;
-        private EngagerTracker eTracker;
-        private GestureRecogniser recogniser;
+        private Body[] bodies;
+        private KinectSensor sensor;
 
         public MainWindow()
         {
             InitializeComponent();
 
             drawer = new Drawer(bodyCanvas);
-            eManager = new EngagementManager();
+            eManager = new EngagementManager.EngagementManager();
             eTracker = new EngagerTracker();
 
-            man = new Manipulator(eTracker);
-            recogniser = new GestureRecogniser(eTracker);
+            man = new Manipulator.Manipulator(eTracker);
+            recogniser = new GestureRecogniser.GestureRecogniser(eTracker);
 
             Loaded += MainPage_Loaded;
             Closing += MainWindow_Closing;
@@ -68,18 +49,17 @@ namespace WpfApplication1
             CoordinateConverter.Sensor = sensor;
 
             bfr.FrameArrived += bfr_FrameArrived;
-            
         }
 
         private void bfr_FrameArrived(object o, BodyFrameArrivedEventArgs args)
         {
-            using (BodyFrame bodyFrame = args.FrameReference.AcquireFrame())
+            using (var bodyFrame = args.FrameReference.AcquireFrame())
             {
                 if (bodyFrame == null)
                 {
                     return;
                 }
-                
+
                 bodyFrame.GetAndRefreshBodyData(bodies);
                 bodyCanvas.Children.Clear();
 
@@ -89,7 +69,7 @@ namespace WpfApplication1
                     {
                         eManager.users.Add(body);
                     }
-                    
+
                     var joints = CoordinateConverter.convertJointsToDSPoints(body.Joints);
                     drawer.drawSkeleton(body, joints);
                 }
@@ -100,7 +80,7 @@ namespace WpfApplication1
                 }
 
                 eTracker.Engager = eManager.Engager;
-                Gestures recognisedGestures = recogniser.recognise();
+                var recognisedGestures = recogniser.recognise();
 
                 man.reactGesture(recognisedGestures);
             }
@@ -108,20 +88,18 @@ namespace WpfApplication1
 
         private void MainWindow_Closing(object sender, CancelEventArgs e)
         {
-            if (this.bfr != null)
+            if (bfr != null)
             {
                 // BodyFrameReader is IDisposable
-                this.bfr.Dispose();
-                this.bfr = null;
+                bfr.Dispose();
+                bfr = null;
             }
 
-            if (this.sensor != null)
+            if (sensor != null)
             {
-                this.sensor.Close();
-                this.sensor = null;
+                sensor.Close();
+                sensor = null;
             }
         }
-
-        
     }
 }
