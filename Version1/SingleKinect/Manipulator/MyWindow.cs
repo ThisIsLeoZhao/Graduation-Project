@@ -9,10 +9,10 @@ namespace SingleKinect.Manipulator
 {
     public struct RECT
     {
-        public int Bottom; // y position of lower-right corner
-        public int Left; // x position of upper-left corner
-        public int Right; // x position of lower-right corner
-        public int Top; // y position of upper-left corner
+        public int Left;
+        public int Top;
+        public int Right;
+        public int Bottom;
     }
 
     public class MyWindow
@@ -28,7 +28,7 @@ namespace SingleKinect.Manipulator
         internal static extern IntPtr GetForegroundWindow();
 
         [DllImport("user32.dll", SetLastError = true)]
-        internal static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
+        internal static extern bool GetWindowRect(IntPtr hwnd, ref RECT lpRect);
 
         [DllImport("User32.dll")]
         private static extern int GetWindowText(IntPtr hWnd, StringBuilder text, int count);
@@ -37,8 +37,16 @@ namespace SingleKinect.Manipulator
         {
             var currentWindow = GetForegroundWindow();
 
-            RECT rct;
-            GetWindowRect(currentWindow, out rct);
+            RECT rct = new RECT
+            {
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                Right = 0,
+                Left = 0,
+                Bottom = 0,
+                Top = 0
+            };
+
+            GetWindowRect(currentWindow, ref rct);
 
             var myRect = new Rect();
 
@@ -48,6 +56,8 @@ namespace SingleKinect.Manipulator
                 Debug.Print(buff.ToString());
             }
 
+            Debug.Print("rct {0}, {1}, {2}, {3}", rct.Left, rct.Top, rct.Right, rct.Bottom);
+
             myRect.X = rct.Left - dis/2 < 0 ? 0 : rct.Left - dis/2;
             myRect.Y = rct.Top - dis/2 < 0 ? 0 : rct.Top - dis/2;
 
@@ -55,15 +65,15 @@ namespace SingleKinect.Manipulator
                 ? CoordinateConverter.screenWidth
                 : rct.Right - myRect.X + 1 + dis;
 
-            myRect.Height = rct.Bottom - myRect.Y + 1 + dis > CoordinateConverter.screenHeight
-                ? CoordinateConverter.screenHeight
+            //Task bar has the height of 50 pixels
+            myRect.Height = rct.Bottom - myRect.Y + 1 + dis > CoordinateConverter.screenHeight - 50
+                ? CoordinateConverter.screenHeight - 50
                 : rct.Bottom - myRect.Y + 1 + dis;
 
-            Debug.Print("rct {0}, {1}, {2}, {3}", rct.Left, rct.Top, myRect.Width, myRect.Height);
+            Debug.Print("myRect {0}, {1}, {2}, {3}", (int) myRect.X, (int) myRect.Y, (int) myRect.Width, (int) myRect.Height);
 
-
-            MoveWindow(currentWindow, (int) myRect.Left - dis/2, (int) myRect.Top - dis/2,
-                (int) myRect.Width + dis, (int) myRect.Height + dis, true);
+            MoveWindow(currentWindow, (int) myRect.X, (int) myRect.Y,
+                (int) myRect.Width, (int) myRect.Height, true);
         }
     }
 }
