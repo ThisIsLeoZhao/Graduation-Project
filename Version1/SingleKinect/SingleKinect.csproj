@@ -107,6 +107,7 @@
     <Compile Include="Manipulator\MyWindow.cs" />
     <Compile Include="MyUtilities\CoordinateConverter.cs" />
     <Compile Include="MyUtilities\Drawer.cs" />
+    <Compile Include="MyUtilities\ReadConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -135,6 +136,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="MyConfiguration\screenConfiguration.txt" />
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

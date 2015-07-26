@@ -32,7 +32,6 @@ namespace SingleKinect
         {
             get
             {
-                //Debug.Print("11111111111111111111111111111111111111111111111");
                 return bodies.Where(body => body.IsTracked);
             }
         }
@@ -40,6 +39,8 @@ namespace SingleKinect
         public MainWindow()
         {
             InitializeComponent();
+
+            ReadConfiguration.read("../../MyConfiguration/screenConfiguration.txt");
 
             drawer = new Drawer(bodyCanvas);
             eManager = new EngagementManager.EngagementManager();

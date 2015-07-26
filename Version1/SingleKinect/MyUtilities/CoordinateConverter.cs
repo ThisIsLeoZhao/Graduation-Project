@@ -6,8 +6,8 @@ namespace SingleKinect.MyUtilities
 {
     public class CoordinateConverter
     {
-        public const int screenWidth = 1920;
-        public const int screenHeight = 1080;
+        public static int screenWidth;
+        public static int screenHeight;
         public static double Ex;
         public static double Ey;
         public static double Ez;

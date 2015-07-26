@@ -29,6 +29,7 @@ namespace SingleKinect.GestureRecogniser
         {
             if (Engager.HandRightState == HandState.Open)
             {
+                preHandRightPoint = null;
                 if (isPressed)
                 {
                     Debug.Print("IsPressed: {0}", isPressed);
@@ -36,6 +37,11 @@ namespace SingleKinect.GestureRecogniser
                     return Gestures.MouseUp;
                 }
                 return Gestures.Move;
+            }
+
+            if (Engager.HandLeftState == HandState.Open)
+            {
+                preHandLeftPoint = null;
             }
 
             if (Engager.HandLeftState == HandState.Closed)
@@ -48,7 +54,7 @@ namespace SingleKinect.GestureRecogniser
                         preHandRightPoint = curHandRightPoint;
                     }
 
-                    return monitorBothHandsClosed();
+                    //return monitorBothHandsClosed();
                 }
 
                 curHandLeftPoint = Engager.Joints[JointType.HandLeft];
@@ -57,11 +63,12 @@ namespace SingleKinect.GestureRecogniser
                 {
                     preHandLeftPoint = curHandLeftPoint;
                 }
-                else if (withinRange(curHandLeftPoint, preHandLeftPoint.Value, 0.1))
+                else if (withinRange(curHandLeftPoint, preHandLeftPoint.Value, 1))
                 {
                     Debug.Print("Ready to scale!");
-                    tracker.ScaleDepth = curHandLeftPoint.Position.Z - preHandLeftPoint.Value.Position.Z;
-
+                    tracker.ScaleDepth += curHandLeftPoint.Position.Z - preHandLeftPoint.Value.Position.Z;
+                    preHandLeftPoint = curHandLeftPoint;
+                    //return Gestures.Scale;
                     if (Math.Abs(tracker.ScaleDepth) > SCALE_TRIGGER)
                     {
                         return Gestures.Scale;
@@ -80,15 +87,13 @@ namespace SingleKinect.GestureRecogniser
                 return Gestures.MouseDown;
 
             }
-
-
             return Gestures.None;
         }
 
         private Gestures monitorBothHandsClosed()
         {
             if (curHandRightPoint.Position.Y < preHandRightPoint.Value.Position.Y &&
-                (int) curHandLeftPoint.Position.Y == (int) curHandRightPoint.Position.Y)
+                withinRange(curHandLeftPoint, curHandRightPoint, 0.4))
             {
                 moveDownDis += CoordinateConverter.JointToDepthSpace(curHandRightPoint).Y -
                                CoordinateConverter.JointToDepthSpace(preHandRightPoint.Value).Y;
@@ -106,7 +111,7 @@ namespace SingleKinect.GestureRecogniser
             }
             else
             {
-                moveDownDis = 0;
+                moveDownDis /= 2;
             }
 
 

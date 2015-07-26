@@ -65,10 +65,20 @@ namespace SingleKinect.Manipulator
                 ? CoordinateConverter.screenWidth
                 : rct.Right - myRect.X + 1 + dis;
 
+            if (myRect.Width < 50)
+            {
+                myRect.Width = 50;
+            }
+
             //Task bar has the height of 50 pixels
             myRect.Height = rct.Bottom - myRect.Y + 1 + dis > CoordinateConverter.screenHeight - 50
                 ? CoordinateConverter.screenHeight - 50
                 : rct.Bottom - myRect.Y + 1 + dis;
+
+            if (myRect.Height < 50)
+            {
+                myRect.Height = 50;
+            }
 
             Debug.Print("myRect {0}, {1}, {2}, {3}", (int) myRect.X, (int) myRect.Y, (int) myRect.Width, (int) myRect.Height);
 

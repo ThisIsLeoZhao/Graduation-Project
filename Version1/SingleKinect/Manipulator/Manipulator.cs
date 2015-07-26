@@ -28,10 +28,9 @@ namespace SingleKinect.Manipulator
 
         public void scaleWindow()
         {
-//            int[] rightPin = CoordinateConverter.cameraPointToScreen(handLeftPoint.X, handLeftPoint.Y);
-
-            var dis = (int) (tracker.ScaleDepth*200);
+            var dis = (int) (tracker.ScaleDepth * 300);
             Debug.Print("dis {0}", dis);
+            tracker.ScaleDepth = 0;
 
             MyWindow.moveWindow(dis);
         }
