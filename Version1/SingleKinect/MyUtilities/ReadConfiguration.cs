@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Runtime.InteropServices.ComTypes;
+﻿using System.IO;
 
 namespace SingleKinect.MyUtilities
 {
@@ -7,20 +6,20 @@ namespace SingleKinect.MyUtilities
     {
         public static void read(string filePath)
         {
-            string[] lines = System.IO.File.ReadAllLines(filePath);
+            var lines = File.ReadAllLines(filePath);
 
-            foreach (string line in lines)
+            foreach (var line in lines)
             {
-                string configuration = line.Split(':')[0];
-                int value = int.Parse(line.Split(':')[1]);
+                var configuration = line.Split(':')[0];
+                var value = int.Parse(line.Split(':')[1]);
 
                 switch (configuration)
                 {
-                    case "screenWidth":
-                        CoordinateConverter.screenWidth = value;
+                    case "SCREEN_WIDTH":
+                        CoordinateConverter.SCREEN_WIDTH = value;
                         break;
-                    case "screenHeight":
-                        CoordinateConverter.screenHeight = value;
+                    case "SCREEN_HEIGHT":
+                        CoordinateConverter.SCREEN_HEIGHT = value;
                         break;
                     default:
                         break;

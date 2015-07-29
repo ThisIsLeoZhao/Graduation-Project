@@ -59,11 +59,32 @@ namespace SingleKinect.MyUtilities
         {
             Brush openBrush = new SolidColorBrush(Color.FromArgb(100, 120, 5, 250));
             Brush closeBrush = new SolidColorBrush(Color.FromArgb(100, 0, 200, 250));
+            Brush lassoBrush = new SolidColorBrush(Color.FromArgb(100, 255, 100, 0));
 
-            var rightBrush = (rightHandState == HandState.Closed ? closeBrush : openBrush);
+            var rightBrush = openBrush;
+            switch (rightHandState)
+            {
+                case HandState.Closed:
+                    rightBrush = closeBrush;
+                    break;
+
+                case HandState.Lasso:
+                    rightBrush = lassoBrush;
+                    break;
+            }
             drawCircle(50, rightHand.X, rightHand.Y, rightBrush);
 
-            var leftBrush = (leftHandState == HandState.Closed ? closeBrush : openBrush);
+            var leftBrush = openBrush;
+            switch (leftHandState)
+            {
+                case HandState.Closed:
+                    leftBrush = closeBrush;
+                    break;
+
+                case HandState.Lasso:
+                    leftBrush = lassoBrush;
+                    break;
+            }
             drawCircle(50, leftHand.X, leftHand.Y, leftBrush);
         }
 

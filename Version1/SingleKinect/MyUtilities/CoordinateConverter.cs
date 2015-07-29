@@ -1,36 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Kinect;
+using SingleKinect.Manipulator;
+using SingleKinect.Manipulator.MyDataStructures;
 
 namespace SingleKinect.MyUtilities
 {
     public class CoordinateConverter
     {
-        public static int screenWidth;
-        public static int screenHeight;
+        public static double PAN_WIDTH = 0.4;
+        public static int SCREEN_WIDTH;
+        public static int SCREEN_HEIGHT;
         public static double Ex;
         public static double Ey;
         public static double Ez;
+        public static double PAN_HEIGHT = 0.2;
         public static KinectSensor Sensor { get; set; }
 
         private static float[] convertToPan(float X, float Y)
         {
             return new[]
             {
-                (float) (X - Ex + 0.2),
+                (float) (X - Ex + PAN_WIDTH/2.0),
                 (float) (Ey - Y)
             };
         }
 
-        public static int[] cameraPointToScreen(float X, float Y)
+        public static POINT cameraPointToScreen(float X, float Y)
         {
             var pan = convertToPan(X, Y);
 
-            return new[]
+            var screenPoint = new POINT
             {
-                (int) (pan[0]/0.4*screenWidth),
-                (int) (pan[1]/0.2*screenHeight)
+                x = (int) (pan[0]/PAN_WIDTH*SCREEN_WIDTH),
+                y = (int) (pan[1]/PAN_HEIGHT*SCREEN_HEIGHT)
             };
+
+            return screenPoint;
         }
 
         public static Dictionary<JointType, DepthSpacePoint> convertJointsToDSPoints(

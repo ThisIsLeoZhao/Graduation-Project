@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Kinect;
 using SingleKinect.MyUtilities;
@@ -48,9 +47,9 @@ namespace SingleKinect.EngagementManager
                     CoordinateConverter.Ex = user.Joints[JointType.HandRight].Position.X;
                     CoordinateConverter.Ey = user.Joints[JointType.HandRight].Position.Y;
                     CoordinateConverter.Ez = user.Joints[JointType.HandRight].Position.Z;
-
-                    Eh = CoordinateConverter.Ez*Math.Tan(Math.PI*(30.0/180));
-                    Ew = CoordinateConverter.Ez*Math.Tan(Math.PI*(35.0/180));
+//
+//                    Eh = CoordinateConverter.Ez*Math.Tan(Math.PI*(30.0/180));
+//                    Ew = CoordinateConverter.Ez*Math.Tan(Math.PI*(35.0/180));
 
                     for (var j = 0; j < users.Count; j++)
                     {

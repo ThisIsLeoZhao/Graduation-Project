@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Net.Sockets;
 using System.Windows;
 using Microsoft.Kinect;
 using SingleKinect.EngagementManager;
 using SingleKinect.MyUtilities;
-
-using System.Net.WebSockets;
 
 //using Microsoft.Kinect.VisualGestureBuilder;
 
@@ -28,14 +24,6 @@ namespace SingleKinect
         private Body[] bodies;
         private KinectSensor sensor;
 
-        public IEnumerable<Body> Bodies
-        {
-            get
-            {
-                return bodies.Where(body => body.IsTracked);
-            }
-        }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -51,6 +39,11 @@ namespace SingleKinect
 
             Loaded += MainPage_Loaded;
             Closing += MainWindow_Closing;
+        }
+
+        public IEnumerable<Body> Bodies
+        {
+            get { return bodies.Where(body => body.IsTracked); }
         }
 
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -86,8 +79,8 @@ namespace SingleKinect
                     }
 
                     var joints = CoordinateConverter.convertJointsToDSPoints(body.Joints);
-                    
-                   // joints.
+
+                    // Multithreading maybe
                     drawer.drawSkeleton(body, joints);
                 }
 

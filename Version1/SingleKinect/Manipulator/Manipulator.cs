@@ -14,6 +14,11 @@ namespace SingleKinect.Manipulator
 
         private readonly EngagerTracker tracker;
 
+        public Manipulator()
+        {
+            tracker = null;
+        }
+
         public Manipulator(EngagerTracker eTracker)
         {
             tracker = eTracker;
@@ -28,11 +33,7 @@ namespace SingleKinect.Manipulator
 
         public void scaleWindow()
         {
-            var dis = (int) (tracker.ScaleDepth * 300);
-            Debug.Print("dis {0}", dis);
-            tracker.ScaleDepth = 0;
-
-            MyWindow.moveWindow(dis);
+            MyWindow.moveWindow(tracker.IncrementRect);
         }
 
         public void moveCursor(int x, int y)
@@ -52,9 +53,15 @@ namespace SingleKinect.Manipulator
             MyCursor.mouse_event(MyCursor.MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
         }
 
+        public void scrollWindow()
+        {
+            Debug.Print("scrollDis {0}", tracker.ScrollDis);
+            MyWindow.scrollWindow((int) (tracker.ScrollDis * 100), tracker.IsVerticalScroll);
+        }
+
         public void reactGesture(Gestures recognisedGestures)
         {
-            if (recognisedGestures != Gestures.Move)
+            if (recognisedGestures != Gestures.None && recognisedGestures != Gestures.Move)
             {
                 Debug.Print("Gesture {0}", recognisedGestures);
             }
@@ -65,24 +72,31 @@ namespace SingleKinect.Manipulator
             switch (recognisedGestures)
             {
                 case Gestures.MouseDown:
-                    leftDown(leftPin[0], leftPin[1]);
+                    leftDown(leftPin.x, leftPin.y);
                     break;
 
                 case Gestures.MouseUp:
-                    leftDown(leftPin[0], leftPin[1]);
-                    leftUp(leftPin[0], leftPin[1]);
+                    leftDown(leftPin.x, leftPin.y);
+                    leftUp(leftPin.x, leftPin.y);
                     break;
 
-                case Gestures.Minimise:
-                    minimiseCurrentWindow();
+                case Gestures.DoubleClick:
+                    leftDown(leftPin.x, leftPin.y);
+                    leftUp(leftPin.x, leftPin.y);
+                    leftDown(leftPin.x, leftPin.y);
+                    leftUp(leftPin.x, leftPin.y);
                     break;
 
                 case Gestures.Move:
-                    moveCursor(leftPin[0], leftPin[1]);
+                    moveCursor(leftPin.x, leftPin.y);
                     break;
 
                 case Gestures.Scale:
                     scaleWindow();
+                    break;
+
+                case Gestures.Scroll:
+                    scrollWindow();
                     break;
 
                 default:

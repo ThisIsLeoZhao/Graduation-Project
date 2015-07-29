@@ -1,13 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.22823.1
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalR", "WpfApplication1\SignalR.csproj", "{5B90B93C-0328-43FC-8C0D-633FD90B864B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingleKinect", "SingleKinect\SingleKinect.csproj", "{89DBEFEB-8239-4E49-9F15-7C0267B3A33B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SignalRChat", "SignalRChat\SignalRChat.csproj", "{68800D74-7801-4530-B77E-CDD29C7E7CB1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WpfApplication2", "WpfApplication2\WpfApplication2.csproj", "{079C804D-FB13-4C50-973B-2308492684F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,14 @@ Global
 		{68800D74-7801-4530-B77E-CDD29C7E7CB1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{68800D74-7801-4530-B77E-CDD29C7E7CB1}.Release|x86.ActiveCfg = Release|Any CPU
 		{68800D74-7801-4530-B77E-CDD29C7E7CB1}.Release|x86.Build.0 = Release|Any CPU
+		{079C804D-FB13-4C50-973B-2308492684F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{079C804D-FB13-4C50-973B-2308492684F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{079C804D-FB13-4C50-973B-2308492684F7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{079C804D-FB13-4C50-973B-2308492684F7}.Debug|x86.Build.0 = Debug|Any CPU
+		{079C804D-FB13-4C50-973B-2308492684F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{079C804D-FB13-4C50-973B-2308492684F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{079C804D-FB13-4C50-973B-2308492684F7}.Release|x86.ActiveCfg = Release|Any CPU
+		{079C804D-FB13-4C50-973B-2308492684F7}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

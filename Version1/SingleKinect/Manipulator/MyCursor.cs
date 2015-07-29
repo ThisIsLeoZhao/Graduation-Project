@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using SingleKinect.Manipulator.MyDataStructures;
 
 namespace SingleKinect.Manipulator
 {
@@ -9,6 +10,9 @@ namespace SingleKinect.Manipulator
 
         [DllImport("User32.dll")]
         internal static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("user32.dll")]
+        internal static extern bool GetCursorPos(out POINT lpPoint);
 
         [DllImport("User32.dll")]
         internal static extern void mouse_event(int dwFlags, int dx, int dy, int cButtons, int dwExtraInfo);

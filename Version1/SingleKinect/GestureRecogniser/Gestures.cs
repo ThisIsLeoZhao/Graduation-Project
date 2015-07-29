@@ -6,6 +6,8 @@
         MouseDown,
         MouseUp,
         Scale,
+        Scroll,
+        DoubleClick,
         Move,
         None
     }

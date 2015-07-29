@@ -1,2 +1,2 @@
-﻿screenWidth: 1920
-screenHeight: 1080
+﻿SCREEN_WIDTH: 1920
+SCREEN_HEIGHT: 1080
