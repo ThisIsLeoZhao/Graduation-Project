@@ -12,17 +12,45 @@ namespace SingleKinect.GestureRecogniser
         private const int MINIMISE_TRIGGER = 50;
         private const float OP_TRIGGER = (float) 0.05;
         public static int SCALE_SENSITIVITY = 50;
+
         private readonly EngagerTracker tracker;
+
+        private Joint? preHandLeftPoint;
+        private Joint? preHandRightPoint;
         private Joint curHandLeftPoint;
         private Joint curHandRightPoint;
+
         private bool doubleClickReady;
         private bool mouseIsDown;
         private float moveDownDis;
-        private Joint? preHandLeftPoint;
-        private Joint? preHandRightPoint;
+
         private bool scaleBaseSet;
         private Joint scaleLeftBase;
         private Joint scaleRightBase;
+
+        private HandState LeftState
+        {
+            get
+            {
+                if (Engager.HandLeftConfidence == TrackingConfidence.High)
+                {
+                    return Engager.HandLeftState;
+                }
+                return HandState.Open;
+            }
+        }
+
+        private HandState RightState
+        {
+            get
+            {
+                if (Engager.HandRightConfidence == TrackingConfidence.High)
+                {
+                    return Engager.HandRightState;
+                }
+                return HandState.Open;
+            }
+        }
 
         public GestureRecogniser(EngagerTracker eTracker)
         {
@@ -44,8 +72,8 @@ namespace SingleKinect.GestureRecogniser
             {
                 preHandLeftPoint = curHandLeftPoint;
             }
-
-            switch (Engager.HandLeftState)
+            
+            switch (LeftState)
             {
                 case HandState.Open:
                     return leftHandOpen();
@@ -59,9 +87,9 @@ namespace SingleKinect.GestureRecogniser
                     return leftHandLasso();
 
                 default:
+                    return Gestures.Move;
                     break;
             }
-
             return Gestures.None;
         }
 
@@ -92,7 +120,7 @@ namespace SingleKinect.GestureRecogniser
 
         private Gestures leftHandClosed()
         {
-            if (Engager.HandRightState == HandState.Closed)
+            if (RightState == HandState.Closed)
             {
                 if (!scaleBaseSet)
                 {
@@ -122,6 +150,8 @@ namespace SingleKinect.GestureRecogniser
 
                 tracker.IncrementRect = incrementRect;
 
+                scaleBaseSet = false;
+
                 return Gestures.Scale;
             }
 
@@ -144,7 +174,7 @@ namespace SingleKinect.GestureRecogniser
                 return Gestures.DoubleClick;
             }
 
-            if (Engager.HandRightState == HandState.Open)
+            if (RightState == HandState.Open)
             {
                 preHandRightPoint = null;
                 if (mouseIsDown)
@@ -156,7 +186,7 @@ namespace SingleKinect.GestureRecogniser
                 return Gestures.Move;
             }
 
-            if (Engager.HandRightState == HandState.Closed)
+            if (RightState == HandState.Closed)
             {
                 if (mouseIsDown)
                 {
@@ -169,6 +199,7 @@ namespace SingleKinect.GestureRecogniser
             }
             return Gestures.None;
         }
+
 
         private bool withinRange(Joint cur, Joint pre, double range)
         {

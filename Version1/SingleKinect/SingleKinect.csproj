@@ -115,6 +115,7 @@
     <Compile Include="Manipulator\SystemConstants\Keyboard\VirtualKeyShort.cs" />
     <Compile Include="Manipulator\SystemConstants\Mouse\MOUSEEVENTF.cs" />
     <Compile Include="Manipulator\SystemConstants\Mouse\MOUSEINPUT.cs" />
+    <Compile Include="Manipulator\SystemConstants\SystemMetric.cs" />
     <Compile Include="MyUtilities\CoordinateConverter.cs" />
     <Compile Include="MyUtilities\Drawer.cs" />
     <Compile Include="MyUtilities\ReadConfiguration.cs" />

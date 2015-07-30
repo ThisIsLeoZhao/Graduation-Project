@@ -3,18 +3,20 @@ using System.Diagnostics;
 using Microsoft.Kinect;
 using SingleKinect.Manipulator;
 using SingleKinect.Manipulator.MyDataStructures;
+using SingleKinect.Manipulator.SystemConstants;
 
 namespace SingleKinect.MyUtilities
 {
     public class CoordinateConverter
     {
         public static double PAN_WIDTH = 0.4;
-        public static int SCREEN_WIDTH;
-        public static int SCREEN_HEIGHT;
+        public static double PAN_HEIGHT = 0.2;
+
+        public static int SCREEN_WIDTH = MyWindow.GetSystemMetrics(SystemMetric.SM_CXSCREEN);
+        public static int SCREEN_HEIGHT = MyWindow.GetSystemMetrics(SystemMetric.SM_CYSCREEN);
         public static double Ex;
         public static double Ey;
         public static double Ez;
-        public static double PAN_HEIGHT = 0.2;
         public static KinectSensor Sensor { get; set; }
 
         private static float[] convertToPan(float X, float Y)

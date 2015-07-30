@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 using SingleKinect.Manipulator.MyDataStructures;
+using SingleKinect.Manipulator.SystemConstants;
 using SingleKinect.Manipulator.SystemConstants.Keyboard;
 using SingleKinect.MyUtilities;
 
 namespace SingleKinect.Manipulator
 {
-    
-
     public class MyWindow
     {
         //PInvoke
@@ -19,6 +19,9 @@ namespace SingleKinect.Manipulator
 
         [DllImport("User32.dll")]
         internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport("user32.dll")]
+        internal static extern int GetSystemMetrics(SystemMetric smIndex);
 
         [DllImport("User32.dll")]
         internal static extern IntPtr GetForegroundWindow();
@@ -34,14 +37,18 @@ namespace SingleKinect.Manipulator
             [MarshalAs(UnmanagedType.LPArray), In] INPUT[] pInputs,
             int cbSize);
 
-        public static void moveWindow(RECT incrementRect)
+        private static RECT rct;
+        private static RECT incrementRect;
+
+        public static void moveWindow(RECT rect)
         {
+            incrementRect = rect;
             Debug.Print("incrementRect {0}, {1}, {2}, {3}", incrementRect.Left, incrementRect.Top,
                 incrementRect.Right, incrementRect.Bottom);
 
             var currentWindow = GetForegroundWindow();
 
-            var rct = new RECT
+            rct = new RECT
             {
                 Right = 0,
                 Left = 0,
@@ -51,7 +58,7 @@ namespace SingleKinect.Manipulator
 
             GetWindowRect(currentWindow, ref rct);
 
-            var myRect = new Rect();
+            var newRect = new Rect();
 
             var buff = new StringBuilder(256);
             if (GetWindowText(currentWindow, buff, 256) > 0)
@@ -61,50 +68,43 @@ namespace SingleKinect.Manipulator
 
             Debug.Print("rct {0}, {1}, {2}, {3}", rct.Left, rct.Top, rct.Right, rct.Bottom);
 
-            myRect.X = rct.Left + incrementRect.Left;
-            myRect.Y = rct.Top + incrementRect.Top;
+            newRect.X = rct.Left + incrementRect.Left;
+            newRect.Y = rct.Top + incrementRect.Top;
 
-            if (myRect.X < 0)
+            if (newRect.X < 0)
             {
-                myRect.X = 0;
+                newRect.X = 0;
             }
-            if (myRect.Y < 0)
+            if (newRect.Y < 0)
             {
-                myRect.Y = 0;
+                newRect.Y = 0;
             }
+            
+            newRect.Width = updateEdge("Right", newRect.X, CoordinateConverter.SCREEN_WIDTH);
+            //Task bar has the height of 50 pixels
+            newRect.Height = updateEdge("Bottom", newRect.Y, CoordinateConverter.SCREEN_HEIGHT - 50);
 
-            if (rct.Right + incrementRect.Right - myRect.X + 1 < 50)
-            {
-                myRect.Width = 50;
-            }
-            else
-            {
-                myRect.Width = rct.Right + incrementRect.Right - myRect.X + 1;
-                if (myRect.Width > CoordinateConverter.SCREEN_WIDTH)
-                {
-                    myRect.Width = CoordinateConverter.SCREEN_WIDTH;
-                }
-            }
+            Debug.Print("newRect {0}, {1}, {2}, {3}", (int) newRect.X, (int) newRect.Y, (int) newRect.Width,
+                (int) newRect.Height);
 
-            if (rct.Bottom + incrementRect.Bottom - myRect.Y + 1 < 50)
+            MoveWindow(currentWindow, (int) newRect.X, (int) newRect.Y,
+                (int) newRect.Width, (int) newRect.Height, true);
+        }
+
+        private static int updateEdge(string edge, double oppositeEdge, int screenLimit)
+        {
+            if (rct[edge] + incrementRect[edge] - oppositeEdge < 50)
             {
-                myRect.Height = 50;
-            }
-            else
-            {
-                myRect.Height = rct.Bottom + incrementRect.Bottom - myRect.Y + 1;
-                //Task bar has the height of 50 pixels
-                if (myRect.Height > CoordinateConverter.SCREEN_HEIGHT - 50)
-                {
-                    myRect.Height = CoordinateConverter.SCREEN_HEIGHT - 50;
-                }
+                return 50;
             }
 
-            Debug.Print("myRect {0}, {1}, {2}, {3}", (int) myRect.X, (int) myRect.Y, (int) myRect.Width,
-                (int) myRect.Height);
+            int result = (int) (rct[edge] + incrementRect[edge] - oppositeEdge);
+            if (result > screenLimit)
+            {
+                return screenLimit;
+            }
 
-            MoveWindow(currentWindow, (int) myRect.X, (int) myRect.Y,
-                (int) myRect.Width, (int) myRect.Height, true);
+            return result;
         }
 
         public static void scrollWindow(int dis, bool vertical)
@@ -144,6 +144,6 @@ namespace SingleKinect.Manipulator
             }
             
         }
-
+        
     }
 }

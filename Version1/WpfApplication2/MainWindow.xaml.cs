@@ -35,22 +35,7 @@ namespace WpfApplication2
         private void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             Manipulator man = new Manipulator();
-            man.moveCursor(0x0400, 0x0200);
 
-            man.leftDown(0x0400, 0x0200);
-            man.leftUp(0x0400, 0x0200);
-//            IntPtr curWindow = MyWindow.GetForegroundWindow();
-//
-//            SCROLLBARINFO info = new SCROLLBARINFO();
-//            info.cbSize = Marshal.SizeOf(info);
-//
-//            int i = GetScrollBarInfo(curWindow, OBJID_VSCROLL, ref info);
-//            
-//            //Debug.Print(info.ToString());
-
-
-
-            
         }
     }
 }
