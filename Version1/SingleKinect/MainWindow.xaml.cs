@@ -5,6 +5,7 @@ using System.Windows;
 using Microsoft.Kinect;
 using SingleKinect.EngagementManager;
 using SingleKinect.MyUtilities;
+using System.Windows.Controls;
 
 //using Microsoft.Kinect.VisualGestureBuilder;
 
@@ -24,16 +25,18 @@ namespace SingleKinect
         private Body[] bodies;
         private KinectSensor sensor;
 
+        public static Label[] labels = new Label[2];
+
         public MainWindow()
         {
             InitializeComponent();
 
             ReadConfiguration.read("../../MyConfiguration.txt");
-
+            
             eTracker = new EngagerTracker();
             eManager = new EngagementManager.EngagementManager();
 
-            drawer = new Drawer(bodyCanvas, eTracker);
+            drawer = new Drawer();
 
             man = new Manipulator.Manipulator(eTracker);
             recogniser = new GestureRecogniser.GestureRecogniser(eTracker);
@@ -56,6 +59,9 @@ namespace SingleKinect
 
             sensor.Open();
             CoordinateConverter.Sensor = sensor;
+            
+            labels[0] = leftLabel;
+            labels[1] = rightLabel;
 
             bfr.FrameArrived += bfr_FrameArrived;
         }
@@ -71,7 +77,9 @@ namespace SingleKinect
 
                 bodyFrame.GetAndRefreshBodyData(bodies);
                 bodyCanvas.Children.Clear();
+                engagerCanvas.Children.Clear();
 
+                
                 foreach (var body in Bodies)
                 {
                     if (!eManager.users.Contains(body))
@@ -79,8 +87,9 @@ namespace SingleKinect
                         eManager.users.Add(body);
                     }
 
-
-                    
+                    // Multithreading maybe
+                    drawer.CurrentCanvas = bodyCanvas;
+                    drawer.drawSkeleton(body);
                 }
 
                 if (!eManager.IsEngage)
@@ -90,10 +99,9 @@ namespace SingleKinect
 
                 eTracker.Engager = eManager.Engager;
 
-
-                var joints = CoordinateConverter.convertJointsToDSPoints(eTracker.Engager.Joints);
                 // Multithreading maybe
-                drawer.drawSkeleton(eTracker.Engager, joints);
+                drawer.CurrentCanvas = engagerCanvas;
+                drawer.drawSkeleton(eTracker);
 
                 var recognisedGestures = recogniser.recognise();
 

@@ -7,10 +7,27 @@
         xmlns:local="clr-namespace:SingleKinect"
         xmlns:controls="http://schemas.microsoft.com/kinect/2014"
         mc:Ignorable="d"
-        Title="MainWindow" Height="424" Width="512">
+        Title="MainWindow" Height="456" Width="1035">
     <Grid>
-        <Image Name="image" Width="512" Height="424" />
-        <Canvas Name="bodyCanvas" Width="512" Height="424" />
+        <Border HorizontalAlignment="Right" Width="512" Height="424" BorderBrush="Black" BorderThickness="2">
+            <Label x:Name="bodyLabel" Content="All People" HorizontalAlignment="Center" 
+               VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
+        </Border>
+        <Image Name="bodyImage" Width="512" Height="424" HorizontalAlignment="Right"/>
+        <Canvas Name="bodyCanvas" Width="512" Height="424" HorizontalAlignment="Right"/>
 
+
+        <Border HorizontalAlignment="Left" Width="512" Height="424" BorderBrush="Black" BorderThickness="2">
+            <Label x:Name="engagerLabel" Content="Current Engager" HorizontalAlignment="Center" 
+               VerticalAlignment="Top" FontSize="16" FontWeight="Bold"/>
+            
+        </Border>
+        <StackPanel HorizontalAlignment="Left">
+            <Label x:Name="leftLabel" Content="HandLeftState: " HorizontalAlignment="Center"/>
+            <Label x:Name="rightLabel" Content="HandRightState: " HorizontalAlignment="Center"/>
+        </StackPanel>
+        <Image Name="engagerImage" Width="512" Height="424" HorizontalAlignment="Left"/>
+        <Canvas Name="engagerCanvas" Width="512" Height="424" HorizontalAlignment="Left" />
     </Grid>
+
 </Window>

@@ -10,11 +10,10 @@ namespace SingleKinect.MyUtilities
 {
     public class Drawer
     {
-        private readonly Canvas bodyCanvas;
+        public Canvas CurrentCanvas { get; set; }
         private readonly List<Tuple<JointType, JointType>> bones;
 
-        private EngagerTracker tracker;
-        public Drawer(Canvas canvas, EngagerTracker tracker)
+        public Drawer()
         {
             // a bone defined as a line between two joints
             bones = new List<Tuple<JointType, JointType>>();
@@ -52,46 +51,57 @@ namespace SingleKinect.MyUtilities
             bones.Add(new Tuple<JointType, JointType>(JointType.HipLeft, JointType.KneeLeft));
             bones.Add(new Tuple<JointType, JointType>(JointType.KneeLeft, JointType.AnkleLeft));
             bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
-
-            bodyCanvas = canvas;
-            this.tracker = tracker;
+            
         }
 
-        public void showHands(DepthSpacePoint rightHand, DepthSpacePoint leftHand, HandState rightHandState,
+        //Draw all people
+        public void drawSkeleton(Body body)
+        {
+            var joints = CoordinateConverter.convertJointsToDSPoints(body.Joints);
+
+            drawBones(joints);
+
+            foreach (var joint in joints.Values)
+            {
+                drawCircle(10, joint.X, joint.Y, new SolidColorBrush(Color.FromArgb(255, 100, 255, 100)));
+            }
+
+            showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
+                body.HandRightState, body.HandLeftState);
+        }
+
+        //Draw engager
+        public void drawSkeleton(EngagerTracker tracker)
+        {
+            var joints = CoordinateConverter.convertJointsToDSPoints(tracker.Engager.Joints);
+
+            drawBones(joints);
+
+            foreach (var joint in joints.Values)
+            {
+                drawCircle(10, joint.X, joint.Y, new SolidColorBrush(Color.FromArgb(255, 100, 255, 100)));
+            }
+
+            showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
+                tracker.RightState, tracker.LeftState);
+
+
+            MainWindow.labels[0].Content = "HandLeftState: " + tracker.LeftState;
+            MainWindow.labels[1].Content = "HandRightState: " + tracker.RightState;
+        }
+
+        private void showHands(DepthSpacePoint rightHand, DepthSpacePoint leftHand, HandState rightHandState,
             HandState leftHandState)
         {
-            Brush openBrush = new SolidColorBrush(Color.FromArgb(100, 120, 5, 250));
-            Brush closeBrush = new SolidColorBrush(Color.FromArgb(100, 0, 200, 250));
-            Brush lassoBrush = new SolidColorBrush(Color.FromArgb(100, 255, 100, 0));
-
-            var rightBrush = openBrush;
-            switch (tracker.RightState)
-            {
-                case HandState.Closed:
-                    rightBrush = closeBrush;
-                    break;
-
-                case HandState.Lasso:
-                    rightBrush = lassoBrush;
-                    break;
-            }
+            var rightBrush = decideHandBrush(rightHandState);
             drawCircle(50, rightHand.X, rightHand.Y, rightBrush);
 
-            var leftBrush = openBrush;
-            switch (tracker.LeftState)
-            {
-                case HandState.Closed:
-                    leftBrush = closeBrush;
-                    break;
-
-                case HandState.Lasso:
-                    leftBrush = lassoBrush;
-                    break;
-            }
+            var leftBrush = decideHandBrush(leftHandState);
             drawCircle(50, leftHand.X, leftHand.Y, leftBrush);
+
         }
 
-        public void drawBones(Dictionary<JointType, DepthSpacePoint> jointPoints)
+        private void drawBones(Dictionary<JointType, DepthSpacePoint> jointPoints)
         {
             foreach (var bone in bones)
             {
@@ -113,11 +123,11 @@ namespace SingleKinect.MyUtilities
                     StrokeThickness = 2
                 };
 
-                bodyCanvas.Children.Add(myLine);
+                CurrentCanvas.Children.Add(myLine);
             }
         }
 
-        public void drawCircle(int radius, float X, float Y, Brush color)
+        private void drawCircle(int radius, float X, float Y, Brush color)
         {
             var leftHandEllipse = new Ellipse
             {
@@ -125,22 +135,35 @@ namespace SingleKinect.MyUtilities
                 Width = radius,
                 Fill = color
             };
-            bodyCanvas.Children.Add(leftHandEllipse);
+            CurrentCanvas.Children.Add(leftHandEllipse);
             Canvas.SetLeft(leftHandEllipse, X - radius/2);
             Canvas.SetTop(leftHandEllipse, Y - radius/2);
         }
 
-        public void drawSkeleton(Body body, Dictionary<JointType, DepthSpacePoint> joints)
+        private Brush decideHandBrush(HandState handState)
         {
-            drawBones(joints);
+            Brush openBrush = new SolidColorBrush(Color.FromArgb(100, 120, 5, 250));
+            Brush closeBrush = new SolidColorBrush(Color.FromArgb(100, 0, 200, 250));
+            Brush lassoBrush = new SolidColorBrush(Color.FromArgb(100, 255, 100, 0));
+            Brush unknownBrush = new SolidColorBrush(Color.FromArgb(100, 50, 50, 50));
+            Brush notTrackedBrush = new SolidColorBrush(Color.FromArgb(255, 0, 0, 0));
 
-            foreach (var joint in joints.Values)
+            switch (handState)
             {
-                drawCircle(10, joint.X, joint.Y, new SolidColorBrush(Color.FromArgb(255, 100, 255, 100)));
-            }
+                case HandState.Closed:
+                    return closeBrush;
 
-            showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
-                body.HandRightState, body.HandLeftState);
+                case HandState.Lasso:
+                    return lassoBrush;
+
+                case HandState.Open:
+                    return openBrush;
+
+                case HandState.NotTracked:
+                    return notTrackedBrush;
+
+            }
+            return unknownBrush;
         }
     }
 }

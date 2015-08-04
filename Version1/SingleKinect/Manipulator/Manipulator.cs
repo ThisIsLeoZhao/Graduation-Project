@@ -82,7 +82,7 @@ namespace SingleKinect.Manipulator
                     break;
 
                 case Gestures.MouseUp:
-                    leftDown(leftPin.x, leftPin.y);
+                    //leftDown(leftPin.x, leftPin.y);
                     leftUp(leftPin.x, leftPin.y);
                     break;
 

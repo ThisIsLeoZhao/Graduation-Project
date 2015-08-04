@@ -46,8 +46,15 @@ namespace SingleKinect.EngagementManager
             {
                 if (engager.HandLeftConfidence == TrackingConfidence.High)
                 {
+                    lastHighConfidenceLeftState = engager.HandLeftState;
+                    if (engager.HandLeftState == HandState.NotTracked || engager.HandLeftState == HandState.Unknown)
+                    {
+                        lastHighConfidenceLeftState = HandState.Open;
+                        return lastHighConfidenceLeftState;
+                    }
                     return engager.HandLeftState;
                 }
+                
                 return lastHighConfidenceLeftState;
             }
         }
@@ -58,8 +65,15 @@ namespace SingleKinect.EngagementManager
             {
                 if (engager.HandRightConfidence == TrackingConfidence.High)
                 {
+                    lastHighConfidenceRightState = engager.HandRightState;
+                    if (engager.HandRightState == HandState.NotTracked || engager.HandRightState == HandState.Unknown)
+                    {
+                        lastHighConfidenceRightState = HandState.Open;
+                        return HandState.Open;
+                    }
                     return engager.HandRightState;
                 }
+                
                 return lastHighConfidenceRightState;
             }
         }
@@ -91,16 +105,6 @@ namespace SingleKinect.EngagementManager
                 preHandLeftPoint = tempLeftJoint;
 
             }
-
-            if (engager.HandLeftConfidence == TrackingConfidence.High)
-            {
-                lastHighConfidenceLeftState = engager.HandLeftState;
-            }
-            if (engager.HandRightConfidence == TrackingConfidence.High)
-            {
-                lastHighConfidenceRightState = engager.HandRightState;
-            }
-
         }
     }
 }
