@@ -2,16 +2,13 @@
 using Microsoft.Kinect;
 using SingleKinect.EngagementManager;
 using SingleKinect.GestureRecogniser;
+using SingleKinect.Manipulator.MyDataStructures;
 using SingleKinect.MyUtilities;
 
 namespace SingleKinect.Manipulator
 {
     public class Manipulator
     {
-//        private float moveDownDistance = 0;
-//        private float previousHandPosition;
-//        private float currentHandPosition;
-
         private readonly EngagerTracker tracker;
 
         public Manipulator()
@@ -36,9 +33,15 @@ namespace SingleKinect.Manipulator
             MyWindow.moveWindow(tracker.IncrementRect);
         }
 
-        public void moveCursor(int x, int y)
+        public void moveCursor()
         {
-            MyCursor.SetCursorPos(x, y);
+            POINT cursor;
+            MyCursor.GetCursorPos(out cursor);
+
+            cursor.x += CoordinateConverter.movementToScreen(tracker.HorizontalRightMovement, false);
+            cursor.y += CoordinateConverter.movementToScreen(tracker.VerticalRightMovement, true);
+
+            MyCursor.SetCursorPos(cursor.x, cursor.y);
         }
 
         public void leftUp(int x, int y)
@@ -56,7 +59,10 @@ namespace SingleKinect.Manipulator
         public void scrollWindow()
         {
             Debug.Print("scrollDis {0}", tracker.ScrollDis);
-            MyWindow.scrollWindow((int) (tracker.ScrollDis * 100), tracker.IsVerticalScroll);
+            int scrollDis = CoordinateConverter.movementToScreen(tracker.ScrollDis, tracker.IsVerticalScroll);
+            Debug.Print("scrollDis {0}", scrollDis);
+
+            MyWindow.scrollWindow(scrollDis, tracker.IsVerticalScroll);
         }
 
         public void reactGesture(Gestures recognisedGestures)
@@ -88,7 +94,7 @@ namespace SingleKinect.Manipulator
                     break;
 
                 case Gestures.Move:
-                    moveCursor(leftPin.x, leftPin.y);
+                    moveCursor();
                     break;
 
                 case Gestures.Scale:

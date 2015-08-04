@@ -57,35 +57,17 @@ namespace SingleKinect.Manipulator
             };
 
             GetWindowRect(currentWindow, ref rct);
-
-            var newRect = new Rect();
-
-            var buff = new StringBuilder(256);
-            if (GetWindowText(currentWindow, buff, 256) > 0)
-            {
-                Debug.Print(buff.ToString());
-            }
-
             Debug.Print("rct {0}, {1}, {2}, {3}", rct.Left, rct.Top, rct.Right, rct.Bottom);
 
-            newRect.X = rct.Left + incrementRect.Left;
-            newRect.Y = rct.Top + incrementRect.Top;
-
-            if (newRect.X < 0)
+            var newRect = new Rect
             {
-                newRect.X = 0;
-            }
-            if (newRect.Y < 0)
-            {
-                newRect.Y = 0;
-            }
+                X = rct.Left + incrementRect.Left < 0 ? 0 : rct.Left + incrementRect.Left,
+                Y = rct.Top + incrementRect.Top < 0 ? 0 : rct.Top + incrementRect.Top
+            };
             
             newRect.Width = updateEdge("Right", newRect.X, CoordinateConverter.SCREEN_WIDTH);
             //Task bar has the height of 50 pixels
             newRect.Height = updateEdge("Bottom", newRect.Y, CoordinateConverter.SCREEN_HEIGHT - 50);
-
-            Debug.Print("newRect {0}, {1}, {2}, {3}", (int) newRect.X, (int) newRect.Y, (int) newRect.Width,
-                (int) newRect.Height);
 
             MoveWindow(currentWindow, (int) newRect.X, (int) newRect.Y,
                 (int) newRect.Width, (int) newRect.Height, true);
@@ -99,9 +81,9 @@ namespace SingleKinect.Manipulator
             }
 
             int result = (int) (rct[edge] + incrementRect[edge] - oppositeEdge);
-            if (result > screenLimit)
+            if (result > screenLimit - oppositeEdge)
             {
-                return screenLimit;
+                return (int) (screenLimit - oppositeEdge);
             }
 
             return result;
@@ -109,6 +91,8 @@ namespace SingleKinect.Manipulator
 
         public static void scrollWindow(int dis, bool vertical)
         {
+            // Positive value for scroll up
+
             INPUT[] input = new INPUT[1];
             input[0].type = 1;
 

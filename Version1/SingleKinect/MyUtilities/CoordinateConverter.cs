@@ -28,6 +28,15 @@ namespace SingleKinect.MyUtilities
             };
         }
 
+        public static int movementToScreen(double movement, bool isVertical)
+        {
+            if (!isVertical)
+            {
+                return (int) (movement / PAN_WIDTH * SCREEN_WIDTH);
+            }
+            return (int) (movement / PAN_HEIGHT * SCREEN_HEIGHT);
+        }
+
         public static POINT cameraPointToScreen(float X, float Y)
         {
             var pan = convertToPan(X, Y);
@@ -47,12 +56,6 @@ namespace SingleKinect.MyUtilities
             var joints = new Dictionary<JointType, DepthSpacePoint>();
             foreach (var joint in jointsDic)
             {
-                if (joint.Value.TrackingState == TrackingState.NotTracked)
-                {
-                    Debug.Print("Hey");
-                    continue;
-                }
-
                 var point = JointToDepthSpace(joint.Value);
 
                 joints.Add(joint.Key, point);

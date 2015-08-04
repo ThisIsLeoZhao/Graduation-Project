@@ -11,7 +11,7 @@ namespace SingleKinect.MyUtilities
             foreach (var line in lines)
             {
                 var configuration = line.Split(':')[0];
-                var value = int.Parse(line.Split(':')[1]);
+                var value = double.Parse(line.Split(':')[1]);
 
                 switch (configuration)
                 {
@@ -20,6 +20,15 @@ namespace SingleKinect.MyUtilities
                         break;
                     case "SCREEN_HEIGHT":
                         //CoordinateConverter.SCREEN_HEIGHT = value;
+                        break;
+                    case "OP_TRIGGER":
+                        GestureRecogniser.GestureRecogniser.OP_TRIGGER = value;
+                        break;
+                    case "CURSOR_SENSITIVITY":
+                        GestureRecogniser.GestureRecogniser.CURSOR_SENSITIVITY = value;
+                        break;
+                    case "SCALE_SENSITIVITY":
+                        GestureRecogniser.GestureRecogniser.SCALE_SENSITIVITY = (int) value;
                         break;
                     default:
                         break;

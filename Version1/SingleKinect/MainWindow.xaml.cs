@@ -28,11 +28,12 @@ namespace SingleKinect
         {
             InitializeComponent();
 
-            ReadConfiguration.read("../../MyConfiguration/screenConfiguration.txt");
+            ReadConfiguration.read("../../MyConfiguration.txt");
 
-            drawer = new Drawer(bodyCanvas);
-            eManager = new EngagementManager.EngagementManager();
             eTracker = new EngagerTracker();
+            eManager = new EngagementManager.EngagementManager();
+
+            drawer = new Drawer(bodyCanvas, eTracker);
 
             man = new Manipulator.Manipulator(eTracker);
             recogniser = new GestureRecogniser.GestureRecogniser(eTracker);
@@ -78,10 +79,8 @@ namespace SingleKinect
                         eManager.users.Add(body);
                     }
 
-                    var joints = CoordinateConverter.convertJointsToDSPoints(body.Joints);
 
-                    // Multithreading maybe
-                    drawer.drawSkeleton(body, joints);
+                    
                 }
 
                 if (!eManager.IsEngage)
@@ -90,6 +89,12 @@ namespace SingleKinect
                 }
 
                 eTracker.Engager = eManager.Engager;
+
+
+                var joints = CoordinateConverter.convertJointsToDSPoints(eTracker.Engager.Joints);
+                // Multithreading maybe
+                drawer.drawSkeleton(eTracker.Engager, joints);
+
                 var recognisedGestures = recogniser.recognise();
 
                 man.reactGesture(recognisedGestures);

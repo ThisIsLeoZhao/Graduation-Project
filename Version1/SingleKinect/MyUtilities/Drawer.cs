@@ -4,6 +4,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
+using SingleKinect.EngagementManager;
 
 namespace SingleKinect.MyUtilities
 {
@@ -12,7 +13,8 @@ namespace SingleKinect.MyUtilities
         private readonly Canvas bodyCanvas;
         private readonly List<Tuple<JointType, JointType>> bones;
 
-        public Drawer(Canvas canvas)
+        private EngagerTracker tracker;
+        public Drawer(Canvas canvas, EngagerTracker tracker)
         {
             // a bone defined as a line between two joints
             bones = new List<Tuple<JointType, JointType>>();
@@ -52,6 +54,7 @@ namespace SingleKinect.MyUtilities
             bones.Add(new Tuple<JointType, JointType>(JointType.AnkleLeft, JointType.FootLeft));
 
             bodyCanvas = canvas;
+            this.tracker = tracker;
         }
 
         public void showHands(DepthSpacePoint rightHand, DepthSpacePoint leftHand, HandState rightHandState,
@@ -62,7 +65,7 @@ namespace SingleKinect.MyUtilities
             Brush lassoBrush = new SolidColorBrush(Color.FromArgb(100, 255, 100, 0));
 
             var rightBrush = openBrush;
-            switch (rightHandState)
+            switch (tracker.RightState)
             {
                 case HandState.Closed:
                     rightBrush = closeBrush;
@@ -75,7 +78,7 @@ namespace SingleKinect.MyUtilities
             drawCircle(50, rightHand.X, rightHand.Y, rightBrush);
 
             var leftBrush = openBrush;
-            switch (leftHandState)
+            switch (tracker.LeftState)
             {
                 case HandState.Closed:
                     leftBrush = closeBrush;
