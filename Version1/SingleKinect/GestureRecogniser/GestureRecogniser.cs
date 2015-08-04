@@ -35,19 +35,15 @@ namespace SingleKinect.GestureRecogniser
             switch (tracker.LeftState)
             {
                 case HandState.Open:
-                    Debug.Print(tracker.LeftState.ToString());
                     return leftHandOpen();
 
                 case HandState.Closed:
-                    Debug.Print(tracker.LeftState.ToString());
                     return leftHandClosed();
 
                 case HandState.Lasso:
-                    Debug.Print(tracker.LeftState.ToString());
                     return leftHandLasso();
 
                 default:
-                    Debug.Print(tracker.LeftState.ToString());
                     if (withinRange(tracker.curHandRightPoint, tracker.preHandRightPoint.Value, CURSOR_SENSITIVITY))
                     {
                         return Gestures.None;
@@ -105,8 +101,8 @@ namespace SingleKinect.GestureRecogniser
 
         private Gestures leftHandClosed()
         {  
-            Debug.Print("handCloseFinished {0} \n doubleClickReady {1} \n" +
-                        "clickReady {2}", bothHandsClosedFinished, doubleClickReady, mouseIsDown);
+//            Debug.Print("handCloseFinished {0} \n doubleClickReady {1} \n" +
+//                        "clickReady {2}", bothHandsClosedFinished, doubleClickReady, mouseIsDown);
             if (tracker.RightState == HandState.Closed)
             {
                 bothHandsClosedFinished = false;

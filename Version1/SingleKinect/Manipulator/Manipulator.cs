@@ -59,6 +59,7 @@ namespace SingleKinect.Manipulator
         public void scrollWindow()
         {
             Debug.Print("scrollDis {0}", tracker.ScrollDis);
+            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             int scrollDis = CoordinateConverter.movementToScreen(tracker.ScrollDis, tracker.IsVerticalScroll);
             Debug.Print("scrollDis {0}", scrollDis);
 

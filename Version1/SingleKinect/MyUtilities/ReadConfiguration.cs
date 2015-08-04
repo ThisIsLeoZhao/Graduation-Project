@@ -10,6 +10,10 @@ namespace SingleKinect.MyUtilities
 
             foreach (var line in lines)
             {
+                if (line.Length == 0)
+                {
+                    continue;
+                }
                 var configuration = line.Split(':')[0];
                 var value = double.Parse(line.Split(':')[1]);
 
@@ -21,6 +25,13 @@ namespace SingleKinect.MyUtilities
                     case "SCREEN_HEIGHT":
                         //CoordinateConverter.SCREEN_HEIGHT = value;
                         break;
+                    case "STEP_WIDTH":
+                        CoordinateConverter.STEP_WIDTH = value;
+                        break;
+                    case "STEP_HEIGHT":
+                        CoordinateConverter.STEP_HEIGHT = value;
+                        break;
+                        
                     case "OP_TRIGGER":
                         GestureRecogniser.GestureRecogniser.OP_TRIGGER = value;
                         break;
