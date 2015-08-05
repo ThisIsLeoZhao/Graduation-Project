@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Threading;
 using Microsoft.Kinect;
 using SingleKinect.EngagementManager;
 using SingleKinect.GestureRecogniser;
 using SingleKinect.Manipulator.MyDataStructures;
+using SingleKinect.Manipulator.SystemConstants.Mouse;
 using SingleKinect.MyUtilities;
 
 namespace SingleKinect.Manipulator
@@ -47,23 +49,21 @@ namespace SingleKinect.Manipulator
         public void leftUp(int x, int y)
         {
             Debug.Print("Mouse Up: {0}, {1}", x, y);
-            MyCursor.mouse_event(MyCursor.MOUSEEVENTF_LEFTUP, x, y, 0, 0);
+            MyCursor.mouse_event(MOUSEEVENTF.LEFTUP, x, y, 0, 0);
         }
 
         public void leftDown(int x, int y)
         {
             Debug.Print("Mouse Down: {0}, {1}", x, y);
-            MyCursor.mouse_event(MyCursor.MOUSEEVENTF_LEFTDOWN, x, y, 0, 0);
+            MyCursor.mouse_event(MOUSEEVENTF.LEFTDOWN, x, y, 0, 0);
         }
 
         public void scrollWindow()
         {
-            Debug.Print("scrollDis {0}", tracker.ScrollDis);
-            //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            int scrollDis = CoordinateConverter.movementToScreen(tracker.ScrollDis, tracker.IsVerticalScroll);
-            Debug.Print("scrollDis {0}", scrollDis);
+            int scrollDis = CoordinateConverter.scrollToScreen(tracker.ScrollDis, tracker.IsVerticalScroll);
+            //Debug.Print("scrollDis {0}", scrollDis);
 
-            MyWindow.scrollWindow(scrollDis, tracker.IsVerticalScroll);
+            MyCursor.scrollWindow(scrollDis, tracker.IsVerticalScroll);
         }
 
         public void reactGesture(Gestures recognisedGestures)
@@ -73,8 +73,10 @@ namespace SingleKinect.Manipulator
                 Debug.Print("Gesture {0}", recognisedGestures);
             }
 
-            var handRightPoint = tracker.Engager.Joints[JointType.HandRight].Position;
-            var leftPin = CoordinateConverter.cameraPointToScreen(handRightPoint.X, handRightPoint.Y);
+            //var handRightPoint = tracker.Engager.Joints[JointType.HandRight].Position;
+            //var leftPin = CoordinateConverter.cameraPointToScreen(handRightPoint.X, handRightPoint.Y);
+            POINT leftPin;
+            MyCursor.GetCursorPos(out leftPin);
 
             switch (recognisedGestures)
             {
@@ -88,10 +90,9 @@ namespace SingleKinect.Manipulator
                     break;
 
                 case Gestures.DoubleClick:
-                    leftDown(leftPin.x, leftPin.y);
-                    leftUp(leftPin.x, leftPin.y);
-                    leftDown(leftPin.x, leftPin.y);
-                    leftUp(leftPin.x, leftPin.y);
+                    MyCursor.mouse_event(MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.LEFTUP, leftPin.x, leftPin.y, 0, 0);
+                    Thread.Sleep(150);
+                    MyCursor.mouse_event(MOUSEEVENTF.LEFTDOWN | MOUSEEVENTF.LEFTUP, leftPin.x, leftPin.y, 0, 0);
                     break;
 
                 case Gestures.Move:

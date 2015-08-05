@@ -4,13 +4,13 @@ using System.Runtime.InteropServices;
 namespace SingleKinect.Manipulator.SystemConstants.Mouse
 {
     [StructLayout(LayoutKind.Sequential)]
-    internal struct MOUSEINPUT
+    public struct MOUSEINPUT
     {
-        internal int dx;
-        internal int dy;
-        internal int mouseData;
-        internal MOUSEEVENTF dwFlags;
-        internal uint time;
-        internal UIntPtr dwExtraInfo;
+        public int dx;
+        public int dy;
+        public int mouseData;
+        public MOUSEEVENTF dwFlags;
+        public uint time;
+        public UIntPtr dwExtraInfo;
     }
 }

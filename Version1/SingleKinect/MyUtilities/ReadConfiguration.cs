@@ -39,7 +39,10 @@ namespace SingleKinect.MyUtilities
                         GestureRecogniser.GestureRecogniser.CURSOR_SENSITIVITY = value;
                         break;
                     case "SCALE_SENSITIVITY":
-                        GestureRecogniser.GestureRecogniser.SCALE_SENSITIVITY = (int) value;
+                        GestureRecogniser.GestureRecogniser.SCALE_SENSITIVITY = value;
+                        break;
+                    case "SCROLL_SENSITIVITY":
+                        CoordinateConverter.SCROLL_SENSITIVITY = value;
                         break;
                     default:
                         break;

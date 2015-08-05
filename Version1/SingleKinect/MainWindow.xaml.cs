@@ -101,8 +101,12 @@ namespace SingleKinect
 
                 // Multithreading maybe
                 drawer.CurrentCanvas = engagerCanvas;
-                drawer.drawSkeleton(eTracker);
+                eManager.IsEngage = drawer.drawSkeleton(eTracker);
 
+                if (eManager.DisablingEngagement)
+                {
+                    return;
+                }
                 var recognisedGestures = recogniser.recognise();
 
                 man.reactGesture(recognisedGestures);

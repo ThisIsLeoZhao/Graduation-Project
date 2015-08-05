@@ -11,7 +11,7 @@ namespace SingleKinect.GestureRecogniser
     {
         public static double OP_TRIGGER;
         public static double CURSOR_SENSITIVITY;
-        public static int SCALE_SENSITIVITY;
+        public static double SCALE_SENSITIVITY;
 
         private readonly EngagerTracker tracker;
         public Body Engager => tracker.Engager;
@@ -147,8 +147,6 @@ namespace SingleKinect.GestureRecogniser
 
             return Gestures.None;
         }
-
-        
 
         private Gestures leftHandLasso()
         {

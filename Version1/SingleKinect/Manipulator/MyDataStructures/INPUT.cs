@@ -8,19 +8,16 @@ namespace SingleKinect.Manipulator.MyDataStructures
     [StructLayout(LayoutKind.Sequential)]
     public struct INPUT
     {
-        internal uint type;
-        internal InputUnion U;
-        internal static int Size
-        {
-            get { return Marshal.SizeOf(typeof(INPUT)); }
-        }
+        public uint type;
+        public InputUnion U;
+
+        public static int Size => Marshal.SizeOf(typeof(INPUT));
     }
 
     [StructLayout(LayoutKind.Explicit)]
-    internal struct InputUnion
+    public struct InputUnion
     {
-        [FieldOffset(0)]
-        internal MOUSEINPUT mi;
+        [FieldOffset(0)] public MOUSEINPUT mi;
         [FieldOffset(0)]
         internal KEYBDINPUT ki;
         [FieldOffset(0)]

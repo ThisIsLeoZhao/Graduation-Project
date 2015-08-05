@@ -3,7 +3,7 @@
 namespace SingleKinect.Manipulator.SystemConstants.Mouse
 {
     [Flags]
-    internal enum MOUSEEVENTF : uint
+    public enum MOUSEEVENTF : uint
     {
         ABSOLUTE = 0x8000,
         HWHEEL = 0x01000,

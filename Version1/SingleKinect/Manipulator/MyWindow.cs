@@ -89,45 +89,37 @@ namespace SingleKinect.Manipulator
             return result;
         }
 
-        public static void scrollWindow(int dis, bool vertical)
-        {
-            // Positive value for scroll up
-
-            INPUT[] input = new INPUT[1];
-            input[0].type = 1;
-
-            VirtualKeyShort key;
-            if (vertical)
-            {
-                key = dis > 0 ? VirtualKeyShort.UP : VirtualKeyShort.DOWN;
-            }
-            else
-            {
-                key = dis > 0 ? VirtualKeyShort.RIGHT : VirtualKeyShort.LEFT;
-            }
-
-            input[0].U.ki = new KEYBDINPUT
-            {
-                wVk = key,
-                wScan = 0,
-                dwFlags = 0,
-                time = 0,
-                dwExtraInfo = new UIntPtr(0)
-            };
-            Debug.Print("key {0}", key);
-
-            while (dis != 0)
-            {
-                input[0].U.ki.dwFlags = 0;
-                SendInput(1, input, INPUT.Size);
-
-                input[0].U.ki.dwFlags = KEYEVENTF.KEYUP; // KEYEVENTF_KEYUP for key release
-                SendInput(1, input, INPUT.Size);
-
-                dis = dis > 0 ? dis - 1 : dis + 1;
-            }
-            
-        }
+//        public static void scrollWindow(int dis)
+//        {
+//            // Positive value for scroll right
+//
+//            INPUT[] input = new INPUT[1];
+//            input[0].type = 1;
+//
+//            var key = dis > 0 ? VirtualKeyShort.RIGHT : VirtualKeyShort.LEFT;
+//
+//            input[0].U.ki = new KEYBDINPUT
+//            {
+//                wVk = key,
+//                wScan = 0,
+//                dwFlags = 0,
+//                time = 0,
+//                dwExtraInfo = new UIntPtr(0)
+//            };
+//            Debug.Print("key {0}", key);
+//
+//            while (dis != 0)
+//            {
+//                input[0].U.ki.dwFlags = 0;
+//                SendInput(1, input, INPUT.Size);
+//
+//                input[0].U.ki.dwFlags = KEYEVENTF.KEYUP; // KEYEVENTF_KEYUP for key release
+//                SendInput(1, input, INPUT.Size);
+//
+//                dis = dis > 0 ? dis - 1 : dis + 1;
+//            }
+//            
+//        }
         
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -71,11 +72,16 @@ namespace SingleKinect.MyUtilities
         }
 
         //Draw engager
-        public void drawSkeleton(EngagerTracker tracker)
+        public bool drawSkeleton(EngagerTracker tracker)
         {
             var joints = CoordinateConverter.convertJointsToDSPoints(tracker.Engager.Joints);
 
-            drawBones(joints);
+            bool inRange = drawBones(joints);
+
+            if (!inRange)
+            {
+                return false;
+            }
 
             foreach (var joint in joints.Values)
             {
@@ -88,6 +94,8 @@ namespace SingleKinect.MyUtilities
 
             MainWindow.labels[0].Content = "HandLeftState: " + tracker.LeftState;
             MainWindow.labels[1].Content = "HandRightState: " + tracker.RightState;
+
+            return true;
         }
 
         private void showHands(DepthSpacePoint rightHand, DepthSpacePoint leftHand, HandState rightHandState,
@@ -101,7 +109,7 @@ namespace SingleKinect.MyUtilities
 
         }
 
-        private void drawBones(Dictionary<JointType, DepthSpacePoint> jointPoints)
+        private bool drawBones(Dictionary<JointType, DepthSpacePoint> jointPoints)
         {
             foreach (var bone in bones)
             {
@@ -113,18 +121,27 @@ namespace SingleKinect.MyUtilities
                     continue;
                 }
 
-                var myLine = new Line
+                try
                 {
-                    X1 = jointPoints[end1].X,
-                    X2 = jointPoints[end2].X,
-                    Y1 = jointPoints[end1].Y,
-                    Y2 = jointPoints[end2].Y,
-                    Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 255, 255)),
-                    StrokeThickness = 2
-                };
+                    var myLine = new Line
+                    {
+                        X1 = jointPoints[end1].X,
+                        X2 = jointPoints[end2].X,
+                        Y1 = jointPoints[end1].Y,
+                        Y2 = jointPoints[end2].Y,
+                        Stroke = new SolidColorBrush(Color.FromArgb(255, 0, 255, 255)),
+                        StrokeThickness = 2
+                    };
 
-                CurrentCanvas.Children.Add(myLine);
+                    CurrentCanvas.Children.Add(myLine);
+                }
+                catch
+                {
+                    //Debug.Print("aaaaa");
+                    return false;
+                }
             }
+            return true;
         }
 
         private void drawCircle(int radius, float X, float Y, Brush color)
@@ -135,9 +152,20 @@ namespace SingleKinect.MyUtilities
                 Width = radius,
                 Fill = color
             };
-            CurrentCanvas.Children.Add(leftHandEllipse);
-            Canvas.SetLeft(leftHandEllipse, X - radius/2);
-            Canvas.SetTop(leftHandEllipse, Y - radius/2);
+
+            try
+            {
+                CurrentCanvas.Children.Add(leftHandEllipse);
+
+                Canvas.SetLeft(leftHandEllipse, X - radius/2);
+                Canvas.SetTop(leftHandEllipse, Y - radius/2);
+            }
+            catch
+            {
+                Debug.Print("bbbbb");
+                return;
+            }
+            
         }
 
         private Brush decideHandBrush(HandState handState)
