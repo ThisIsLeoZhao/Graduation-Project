@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using SingleKinect.GestureRecogniser;
 
 namespace SingleKinect.MyUtilities
 {
@@ -32,14 +33,14 @@ namespace SingleKinect.MyUtilities
                         CoordinateConverter.STEP_HEIGHT = value;
                         break;
                         
-                    case "OP_TRIGGER":
-                        GestureRecogniser.GestureRecogniser.OP_TRIGGER = value;
+                    case "SCALE_TRIGGER":
+                        GestureAnalyser.SCALE_TRIGGER = value;
                         break;
                     case "CURSOR_SENSITIVITY":
-                        GestureRecogniser.GestureRecogniser.CURSOR_SENSITIVITY = value;
+                        GestureAnalyser.CURSOR_SENSITIVITY = value;
                         break;
                     case "SCALE_SENSITIVITY":
-                        GestureRecogniser.GestureRecogniser.SCALE_SENSITIVITY = value;
+                        GestureAnalyser.SCALE_SENSITIVITY = value;
                         break;
                     case "SCROLL_SENSITIVITY":
                         CoordinateConverter.SCROLL_SENSITIVITY = value;

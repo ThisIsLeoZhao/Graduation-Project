@@ -94,6 +94,7 @@
     </Compile>
     <Compile Include="EngagementManager\EngagementManager.cs" />
     <Compile Include="EngagementManager\EngagerTracker.cs" />
+    <Compile Include="GestureRecogniser\GestureAnalyser.cs" />
     <Compile Include="GestureRecogniser\GestureRecogniser.cs" />
     <Compile Include="GestureRecogniser\Gestures.cs" />
     <Compile Include="MainWindow.xaml.cs">

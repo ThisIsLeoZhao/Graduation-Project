@@ -9,9 +9,6 @@ namespace SingleKinect.GestureRecogniser
 {
     public class GestureRecogniser
     {
-        public static double OP_TRIGGER;
-        public static double CURSOR_SENSITIVITY;
-        public static double SCALE_SENSITIVITY;
 
         private readonly EngagerTracker tracker;
         public Body Engager => tracker.Engager;
@@ -19,15 +16,14 @@ namespace SingleKinect.GestureRecogniser
         private bool doubleClickReady;
         private bool mouseIsDown;
         private bool bothHandsClosedFinished = true;
-
-        private bool scaleBaseSet;
-        private Joint scaleLeftBase;
-        private Joint scaleRightBase;
-
         
+
+        private readonly GestureAnalyser analyser = GestureAnalyser.Instance;
+
         public GestureRecogniser(EngagerTracker eTracker)
         {
             tracker = eTracker;
+            analyser.tracker = eTracker;
         }
 
         public Gestures recognise()
@@ -44,11 +40,7 @@ namespace SingleKinect.GestureRecogniser
                     return leftHandLasso();
 
                 default:
-                    if (withinRange(tracker.curHandRightPoint, tracker.preHandRightPoint.Value, CURSOR_SENSITIVITY))
-                    {
-                        return Gestures.None;
-                    }
-                    return Gestures.Move;
+                    return analyser.isRealMove() ? Gestures.Move : Gestures.None;
             }
         }
 
@@ -64,21 +56,16 @@ namespace SingleKinect.GestureRecogniser
             if (tracker.RightState == HandState.Open)
             {
                 bothHandsClosedFinished = true;
-                scaleBaseSet = false;
-
-                //preHandRightPoint = null;
+                analyser.bothHandsOpen();
+                
                 if (mouseIsDown && bothHandsClosedFinished)
                 {
                     Debug.Print("IsPressed: {0}", mouseIsDown);
                     mouseIsDown = false;
                     return Gestures.MouseUp;
                 }
-                
-                if (withinRange(tracker.curHandRightPoint, tracker.preHandRightPoint.Value, CURSOR_SENSITIVITY))
-                {
-                    return Gestures.None;
-                }
-                return Gestures.Move;
+
+                return analyser.isRealMove() ? Gestures.Move : Gestures.None;
             }
 
             if (tracker.RightState == HandState.Closed)
@@ -86,11 +73,7 @@ namespace SingleKinect.GestureRecogniser
                 if (mouseIsDown)
                 {
                     //drag
-                    if (withinRange(tracker.curHandRightPoint, tracker.preHandRightPoint.Value, CURSOR_SENSITIVITY))
-                    {
-                        return Gestures.None;
-                    }
-                    return Gestures.Move;
+                    return analyser.isRealMove() ? Gestures.Move : Gestures.None;
                 }
 
                 mouseIsDown = true;
@@ -109,38 +92,16 @@ namespace SingleKinect.GestureRecogniser
                 doubleClickReady = false;
                 mouseIsDown = false;
 
-                if (!scaleBaseSet)
+                if (analyser.tryScale())
                 {
-                    scaleRightBase = tracker.curHandRightPoint;
-                    scaleLeftBase = tracker.curHandLeftPoint;
-
-                    scaleBaseSet = true;
-                    return Gestures.None;
+                    analyser.setIncrementRect();
+                    return Gestures.Scale;
                 }
 
-                if (withinRange(scaleRightBase, tracker.curHandRightPoint, OP_TRIGGER) &&
-                    withinRange(scaleLeftBase, tracker.curHandLeftPoint, OP_TRIGGER))
-                {
-                    return Gestures.None;
-                }
-
-                Debug.Print("act");
-                //Left hand controls left and lower edge. Right hand for the rest edges.
-                var incrementRect = new RECT();
-                int rightMove = (int)((scaleRightBase.Position.Y - tracker.curHandRightPoint.Position.Y) * SCALE_SENSITIVITY);
-                int leftMove = (int)((scaleLeftBase.Position.Y - tracker.curHandLeftPoint.Position.Y) * SCALE_SENSITIVITY);
-
-                incrementRect.Bottom = scaleRightBase.Position.Y < scaleLeftBase.Position.Y ? rightMove : leftMove;
-                incrementRect.Top = scaleRightBase.Position.Y < scaleLeftBase.Position.Y ? leftMove : rightMove;
-
-                incrementRect.Right = (int)((tracker.curHandRightPoint.Position.X - scaleRightBase.Position.X) * SCALE_SENSITIVITY);
-                incrementRect.Left = (int)((tracker.curHandLeftPoint.Position.X - scaleLeftBase.Position.X) * SCALE_SENSITIVITY);
-
-                tracker.IncrementRect = incrementRect;
-                return Gestures.Scale;
+                return Gestures.None;
             }
 
-            if (!doubleClickReady && bothHandsClosedFinished)
+            if (bothHandsClosedFinished)
             {
                 doubleClickReady = true;
             }
@@ -150,35 +111,9 @@ namespace SingleKinect.GestureRecogniser
 
         private Gestures leftHandLasso()
         {
-            if (withinRange(tracker.curHandRightPoint, tracker.preHandRightPoint.Value, OP_TRIGGER))
-            {
-                return Gestures.None;
-            }
-
-            if (Math.Abs(tracker.curHandRightPoint.Position.Y - tracker.preHandRightPoint.Value.Position.Y) >
-                Math.Abs(tracker.curHandRightPoint.Position.X - tracker.preHandRightPoint.Value.Position.X))
-            {
-                tracker.IsVerticalScroll = true;
-                tracker.ScrollDis = tracker.VerticalRightMovement;
-            }
-            else
-            {
-                tracker.IsVerticalScroll = false;
-                tracker.ScrollDis = tracker.HorizontalRightMovement;
-            }
-            
+            analyser.setScrollFactor();
             return Gestures.Scroll;
         }
-
-        private bool withinRange(Joint cur, Joint pre, double range)
-        {
-            if (range < 0)
-            {
-                range = -range;
-            }
-
-            return Math.Sqrt(Math.Pow(cur.Position.X - pre.Position.X, 2.0) +
-                             Math.Pow(cur.Position.Y - pre.Position.Y, 2.0)) < range;
-        }
+        
     }
 }
