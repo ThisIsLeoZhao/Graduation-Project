@@ -14,11 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SingleKinect.Manipulator;
-using SingleKinect.Manipulator.MyDataStructures;
-using SingleKinect.Manipulator.SystemConstants;
-using SingleKinect.Manipulator.SystemConstants.Keyboard;
-using SingleKinect.Manipulator.SystemConstants.Mouse;
+using SingleKinect.Manipulation.MyDataStructures;
+using SingleKinect.Manipulation.SystemConstants.Mouse;
 
 namespace WpfApplication2
 {

@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using SingleKinect.GestureRecogniser;
+using SingleKinect.GestureRecognise;
 
 namespace SingleKinect.MyUtilities
 {

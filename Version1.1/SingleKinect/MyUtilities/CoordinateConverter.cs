@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Kinect;
-using SingleKinect.Manipulator;
-using SingleKinect.Manipulator.MyDataStructures;
-using SingleKinect.Manipulator.SystemConstants;
+using SingleKinect.Manipulation;
+using SingleKinect.Manipulation.SystemConstants;
 
 namespace SingleKinect.MyUtilities
 {
     public class CoordinateConverter
     {
+        private const int CURSOR_MINIMAL_MOVEMENT = 5;
         public static double STEP_WIDTH;
         public static double STEP_HEIGHT;
 
@@ -30,10 +30,30 @@ namespace SingleKinect.MyUtilities
             if (!isVertical)
             {
                 //Debug.Print("horizontal movement: {0}", (int)(movement * Math.Abs(movement) * horizontalRatio));
-                return (int) (movement * Math.Abs(movement) * horizontalRatio);
+                int hDis = (int) (movement * Math.Abs(movement) * horizontalRatio);
+                if (hDis > 0 && hDis < CURSOR_MINIMAL_MOVEMENT)
+                {
+                    hDis = CURSOR_MINIMAL_MOVEMENT;
+                }
+                if (hDis < 0 && hDis > -CURSOR_MINIMAL_MOVEMENT)
+                {
+                    hDis = -CURSOR_MINIMAL_MOVEMENT;
+                }
+
+                return hDis;
             }
             //Debug.Print("vertical movement: {0}", (int)(movement * Math.Abs(movement) * verticalRatio));
-            return (int) (movement * Math.Abs(movement) * verticalRatio);
+            int vDis = (int) (movement * Math.Abs(movement) * verticalRatio);
+            if (vDis > 0 && vDis < CURSOR_MINIMAL_MOVEMENT)
+            {
+                vDis = CURSOR_MINIMAL_MOVEMENT;
+            }
+            if (vDis < 0 && vDis > -CURSOR_MINIMAL_MOVEMENT)
+            {
+                vDis = -CURSOR_MINIMAL_MOVEMENT;
+            }
+
+            return vDis;
         }
 
         public static int scrollToScreen(double movement, bool isVertical)

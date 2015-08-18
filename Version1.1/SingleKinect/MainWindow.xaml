@@ -25,6 +25,8 @@
         <StackPanel HorizontalAlignment="Left">
             <Label x:Name="leftLabel" Content="HandLeftState: " HorizontalAlignment="Center"/>
             <Label x:Name="rightLabel" Content="HandRightState: " HorizontalAlignment="Center"/>
+            <Label x:Name="faceLabel" Content="Face Yaw Pitch Roll: " HorizontalAlignment="Center"/>
+
         </StackPanel>
         <Image Name="engagerImage" Width="512" Height="424" HorizontalAlignment="Left"/>
         <Canvas Name="engagerCanvas" Width="512" Height="424" HorizontalAlignment="Left" />
