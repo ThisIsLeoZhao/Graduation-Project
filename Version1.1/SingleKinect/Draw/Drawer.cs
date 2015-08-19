@@ -84,6 +84,8 @@ namespace SingleKinect.Draw
 
             showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
                 body.HandRightState, body.HandLeftState);
+            faceLabel.Content = "Face Yaw Pitch Roll: " + FrameReader.Instance.yaw + ", " + FrameReader.Instance.pitch + ", " + FrameReader.Instance.roll;
+
         }
 
         //Draw engager
@@ -104,7 +106,6 @@ namespace SingleKinect.Draw
 
             leftLabel.Content = "HandLeftState: " + tracker.LeftState;
             rightLabel.Content = "HandRightState: " + tracker.RightState;
-            faceLabel.Content = "Face Yaw Pitch Roll: " + FrameReader.Instance.yaw + ", " + FrameReader.Instance.pitch + ", " + FrameReader.Instance.roll;
 
         }
 

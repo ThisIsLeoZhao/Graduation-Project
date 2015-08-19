@@ -95,6 +95,7 @@
     <Compile Include="Draw\ComponentsArgs.cs" />
     <Compile Include="Draw\Drawer.cs" />
     <Compile Include="EngagementManage\DataToSend.cs" />
+    <Compile Include="EngagementManage\MyHuman.cs" />
     <Compile Include="FrameProcess\BodyProcessor.cs" />
     <Compile Include="FrameProcess\FaceProcessor.cs" />
     <Compile Include="FrameProcess\FrameReader.cs" />

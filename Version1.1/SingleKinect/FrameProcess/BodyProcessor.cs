@@ -10,7 +10,7 @@ namespace SingleKinect.FrameProcess
 {
     public class BodyProcessor
     {
-        public int bodyCount = 6;
+        private int bodyCount = 6;
         private Body[] bodies;
         private Drawer drawer;
         private EngagementManager eManager;
@@ -28,46 +28,82 @@ namespace SingleKinect.FrameProcess
             this.eManager = eManager;
         }
 
-        public bool processBodyFrame(BodyFrame frame)
+        public void processBodyFrame(BodyFrame frame)
         {
-            if (frame == null)
-            {
-                return false;
-            }
-
             frame.GetAndRefreshBodyData(bodies);
 
             foreach (var body in Bodies)
             {
-                Debug.Print("Tracking ID {0}", body.TrackingId);
-
                 if (!eManager.users.ContainsKey(body.TrackingId))
                 {
-                    eManager.users[body.TrackingId] = body;
+                    eManager.users[body.TrackingId] = new MyHuman(body);
                     eManager.holdTime[body.TrackingId] = 0;
                 }
-
-//                if (!eManager.users.Contains(body))
-//                {
-//                    eManager.users.Add(body);
-//
-//                }
 
                 // Multithreading maybe
                 drawer.currentCanvasName = "body";
                 drawer.drawSkeleton(body);
             }
-
-            return true;
+            
         }
 
-        public void face(FaceFrameSource[] faceFrameSources, int i)
+        public void matchFaceWithBody(FaceFrameSource[] faceFrameSources, FaceFrameResult[] faceFrameResults, FaceProcessor faceProcessor)
         {
-            if (bodies[i].IsTracked)
+            foreach (var body in bodies)
             {
-                // update the face frame source to track this body
-                faceFrameSources[i].TrackingId = bodies[i].TrackingId;
+                if (!body.IsTracked)
+                {
+                    continue;
+                }
+                
+
+                int i = getBodyIndex(body);
+                Debug.Print("Body {0} comes with ID {1}", i, body.TrackingId);
+
+                if (faceFrameSources[i].IsTrackingIdValid)
+                {
+                    // check if we have valid face frame results
+                    //Debug.Print("Source Valid {0}", i);
+
+                    if (faceFrameResults[i] != null)
+                    {
+                        //Debug.Print("Result Valid {0}", i);
+                        int pitch, yaw, roll;
+                        faceProcessor.ExtractFaceRotationInDegrees(faceFrameResults[i].FaceRotationQuaternion, out pitch,
+                            out yaw, out roll);
+                        
+
+                        eManager.users[faceFrameSources[i].TrackingId].headPitch = pitch;
+                        eManager.users[faceFrameSources[i].TrackingId].headYaw = yaw;
+                        eManager.users[faceFrameSources[i].TrackingId].headRoll = roll;
+                    }
+                    else
+                    {
+                        eManager.users[faceFrameSources[i].TrackingId].headPitch = 1000;
+                        eManager.users[faceFrameSources[i].TrackingId].headYaw = 1000;
+                        eManager.users[faceFrameSources[i].TrackingId].headRoll = 1000;
+                    }
+                    FrameReader.Instance.pitch = eManager.users[faceFrameSources[i].TrackingId].headPitch;
+                    FrameReader.Instance.roll = eManager.users[faceFrameSources[i].TrackingId].headRoll;
+                    FrameReader.Instance.yaw = eManager.users[faceFrameSources[i].TrackingId].headYaw;
+                }
+                else
+                {
+                    faceFrameSources[i].TrackingId = bodies[i].TrackingId;
+                }
             }
+        }
+
+        private int getBodyIndex(Body body)
+        {
+            for (int i = 0; i < bodyCount; i++)
+            {
+                if (body == bodies[i])
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }
