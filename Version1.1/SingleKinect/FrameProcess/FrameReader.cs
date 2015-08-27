@@ -157,11 +157,11 @@ namespace SingleKinect.FrameProcess
                 }
                 
                 int index = ffsDic[faceFrame.FaceFrameSource];
-                Debug.Print("Face {0} comes with {1} ID {2}", index, faceFrame.FaceFrameSource.IsTrackingIdValid, faceFrame.FaceFrameSource.TrackingId);
+               // Debug.Print("Face {0} comes with {1} ID {2}", index, faceFrame.FaceFrameSource.IsTrackingIdValid, faceFrame.FaceFrameSource.TrackingId);
 
                 if (faceProcessor.validateFaceFrame(faceFrame))
                 {
-                    Debug.Print("Validate Face {0} Succeed with ID {1}", index, faceFrame.FaceFrameSource.TrackingId);
+                    //Debug.Print("Validate Face {0} Succeed with ID {1}", index, faceFrame.FaceFrameSource.TrackingId);
                     faceFrameResults[index] = faceFrame.FaceFrameResult;
                 }
                 else

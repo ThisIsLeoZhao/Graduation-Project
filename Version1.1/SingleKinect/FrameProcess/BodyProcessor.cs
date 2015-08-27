@@ -58,7 +58,7 @@ namespace SingleKinect.FrameProcess
                 
 
                 int i = getBodyIndex(body);
-                Debug.Print("Body {0} comes with ID {1}", i, body.TrackingId);
+                //Debug.Print("Body {0} comes with ID {1}", i, body.TrackingId);
 
                 if (faceFrameSources[i].IsTrackingIdValid)
                 {
@@ -83,9 +83,14 @@ namespace SingleKinect.FrameProcess
                         eManager.users[faceFrameSources[i].TrackingId].headYaw = 1000;
                         eManager.users[faceFrameSources[i].TrackingId].headRoll = 1000;
                     }
-                    FrameReader.Instance.pitch = eManager.users[faceFrameSources[i].TrackingId].headPitch;
-                    FrameReader.Instance.roll = eManager.users[faceFrameSources[i].TrackingId].headRoll;
-                    FrameReader.Instance.yaw = eManager.users[faceFrameSources[i].TrackingId].headYaw;
+
+                    if (eManager.HasEngaged && eManager.Engager.body.TrackingId == faceFrameSources[i].TrackingId)
+                    {
+                        //Debug.Print("Engager: {0}", eManager.Engager.body.TrackingId);
+                        FrameReader.Instance.pitch = eManager.users[faceFrameSources[i].TrackingId].headPitch;
+                        FrameReader.Instance.roll = eManager.users[faceFrameSources[i].TrackingId].headRoll;
+                        FrameReader.Instance.yaw = eManager.users[faceFrameSources[i].TrackingId].headYaw;
+                    }
                 }
                 else
                 {

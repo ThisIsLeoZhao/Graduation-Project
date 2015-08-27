@@ -21,7 +21,7 @@ namespace SingleKinect.EngagementManage
         {
             get
             {
-                Debug.Print("users {0}", users.Count);
+                //Debug.Print("users {0}", users.Count);
 
                 checkEngage();
                 return engage;
@@ -70,19 +70,19 @@ namespace SingleKinect.EngagementManage
                 if (!engage &&
                     user.body.Joints[JointType.HandRight].Position.Y > user.body.Joints[JointType.Head].Position.Y)
                 {
-                    if (Math.Abs(user.headYaw) > 40)
+                    if (Math.Abs(user.headYaw) > 30)
                     {
                         Debug.Print("user {0} disabled by head yaw {1}", user.body.TrackingId, user.headYaw);
-                        holdTime[userTuple.Key] = 0;
+                        //holdTime[userTuple.Key] = 0;
                         continue;
                     }
                     Debug.Print("user {0} pass by head yaw {1}", user.body.TrackingId, user.headYaw);
 
                     //Debug.Print("user {0}, {1}", userTuple.Key, userTuple.Value);
-                    holdTime[userTuple.Key] = holdTime[userTuple.Key] + 1;
+                    holdTime[userTuple.Key] += 1;
                     Debug.Print("headHoldTime " + userTuple.Key + ": " + holdTime[userTuple.Key]);
 
-                    if (holdTime[userTuple.Key] < 50)
+                    if (holdTime[userTuple.Key] < 40)
                     {
                         continue;
                     }
@@ -108,13 +108,20 @@ namespace SingleKinect.EngagementManage
                     return;
                 }
 
-                if (Engager.body.Joints[JointType.HandRight].Position.Y <
-                    Engager.body.Joints[JointType.SpineBase].Position.Y + 0.1)
+                if (Math.Abs(Engager.headYaw) > 30)
                 {
                     DisablingEngagement = true;
                     holdTime[engageUserID] += 1;
-                    Debug.Print("spineholdTime " + holdTime[engageUserID]);
-                    if (holdTime[engageUserID] < 100)
+                    Debug.Print("Disengage time: " + holdTime[engageUserID]);
+
+                }
+                if (Engager.body.Joints[JointType.HandRight].Position.Y <
+                    Engager.body.Joints[JointType.SpineBase].Position.Y + 0.1 || Math.Abs(Engager.headYaw) > 30)
+                {
+                    DisablingEngagement = true;
+                    holdTime[engageUserID] += 1;
+                    Debug.Print("Disengage time: " + holdTime[engageUserID]);
+                    if (holdTime[engageUserID] < 80)
                     {
                         return;
                     }

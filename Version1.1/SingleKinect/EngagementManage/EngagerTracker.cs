@@ -48,9 +48,7 @@ namespace SingleKinect.EngagementManage
                     if (engager.HandLeftState == HandState.NotTracked || engager.HandLeftState == HandState.Unknown)
                     {
                         lastHighConfidenceLeftState = HandState.Open;
-                        return lastHighConfidenceLeftState;
                     }
-                    return engager.HandLeftState;
                 }
                 
                 return lastHighConfidenceLeftState;
@@ -67,9 +65,7 @@ namespace SingleKinect.EngagementManage
                     if (engager.HandRightState == HandState.NotTracked || engager.HandRightState == HandState.Unknown)
                     {
                         lastHighConfidenceRightState = HandState.Open;
-                        return HandState.Open;
                     }
-                    return engager.HandRightState;
                 }
                 
                 return lastHighConfidenceRightState;

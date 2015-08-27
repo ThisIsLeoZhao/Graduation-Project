@@ -24,7 +24,7 @@ namespace SingleKinect
     {
         private Drawer drawer = Drawer.Instance;
         private KinectSensor sensor;
-        private SendData dataSender = SendData.Instance;
+        //private SendData dataSender = SendData.Instance;
 
         private FrameReader frameReader = FrameReader.Instance;
 
@@ -37,7 +37,7 @@ namespace SingleKinect
             drawer.bindComponents(new ComponentsArgs(leftLabel, rightLabel, bodyCanvas, engagerCanvas, faceLabel));
 //            drawer.bindComponents(new ComponentsArgs(leftLabel, rightLabel, bodyCanvas, engagerCanvas));
 
-            dataSender.connect();
+            //dataSender.connect();
             Loaded += MainPage_Loaded;
             Closing += MainWindow_Closing;
         }
