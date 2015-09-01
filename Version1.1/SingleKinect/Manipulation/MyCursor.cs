@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
-using SingleKinect.Manipulation.MyDataStructures;
-using SingleKinect.Manipulation.SystemConstants;
-using SingleKinect.Manipulation.SystemConstants.Mouse;
-using SingleKinect.MyUtilities;
+using SingleKinect.CoordinateConvert;
+using SingleKinect.Manipulation.InputConstants;
+using SingleKinect.Manipulation.InputConstants.Mouse;
+using SingleKinect.MyDataStructures;
+using SingleKinect.SystemConstant;
 
 namespace SingleKinect.Manipulation
 {
@@ -54,9 +56,10 @@ namespace SingleKinect.Manipulation
         {
             POINT cursor;
             GetCursorPos(out cursor);
-
+            Debug.Print("x: {0},y: {1}", cursor.x, cursor.y);
             cursor.x += CoordinateConverter.movementToScreen(xIncrement, false);
             cursor.y += CoordinateConverter.movementToScreen(yIncrement, true);
+            Debug.Print("ax: {0},ay: {1}", cursor.x, cursor.y);
 
             SetCursorPos(cursor.x, cursor.y);
         }

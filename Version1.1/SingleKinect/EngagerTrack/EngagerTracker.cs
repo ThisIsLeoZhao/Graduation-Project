@@ -1,11 +1,27 @@
 ﻿using System;
 using Microsoft.Kinect;
-using SingleKinect.Manipulation.MyDataStructures;
+using SingleKinect.EngagementManage;
+using SingleKinect.MyDataStructures;
 
-namespace SingleKinect.EngagementManage
+namespace SingleKinect.EngagerTrack
 {
     public class EngagerTracker
     {
+        private static EngagerTracker engagerTracker;
+        private EngagerTracker() { }
+
+        public static EngagerTracker Instance
+        {
+            get
+            {
+                if (engagerTracker == null)
+                {
+                    engagerTracker = new EngagerTracker();
+                }
+                return engagerTracker;
+            }
+        }
+
         public Joint? preHandLeftPoint = null;
         public Joint? preHandRightPoint = null;
         public Joint curHandLeftPoint;
@@ -71,6 +87,10 @@ namespace SingleKinect.EngagementManage
                 return lastHighConfidenceRightState;
             }
         }
+
+        public int Pitch { get; set; }
+        public int Yaw { get; set; }
+        public int Roll { get; set; }
 
         public DataToSend DataToSend
         {

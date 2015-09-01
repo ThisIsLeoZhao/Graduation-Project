@@ -3,27 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Kinect;
+using SingleKinect.EngagerTrack;
 
 namespace SingleKinect.EngagementManage
 {
     public class EngagementManager
     {
+        private const int ENGAGE_BAR = 40;
+        private const int DISENGAGE_BAR = 80;
         private bool engage;
         private ulong engageUserID = 0;
 
-        private double Ew;
-        private double Eh;
-
         public Dictionary<ulong, MyHuman> users = new Dictionary<ulong, MyHuman>();
         public Dictionary<ulong, int> holdTime = new Dictionary<ulong, int>();
+
+        public EngagerTracker eTracker = EngagerTracker.Instance;
 
         public bool HasEngaged
         {
             get
             {
-                //Debug.Print("users {0}", users.Count);
-
                 checkEngage();
+
                 return engage;
             }
             set { engage = value; }
@@ -53,15 +54,7 @@ namespace SingleKinect.EngagementManage
 
         private void checkEngage()
         {
-            List<ulong> userKeys = new List<ulong>(users.Keys);
-            foreach (var key in userKeys)
-            {
-                if (!users[key].body.IsTracked)
-                {
-                    users.Remove(key);
-                    holdTime.Remove(key);
-                }
-            }
+            clearUntrackedUser();
 
             foreach (var userTuple in users)
             {
@@ -72,7 +65,7 @@ namespace SingleKinect.EngagementManage
                 {
                     if (Math.Abs(user.headYaw) > 30)
                     {
-                        Debug.Print("user {0} disabled by head yaw {1}", user.body.TrackingId, user.headYaw);
+                        Debug.Print("user {0} continued by head yaw {1}", user.body.TrackingId, user.headYaw);
                         //holdTime[userTuple.Key] = 0;
                         continue;
                     }
@@ -82,21 +75,14 @@ namespace SingleKinect.EngagementManage
                     holdTime[userTuple.Key] += 1;
                     Debug.Print("headHoldTime " + userTuple.Key + ": " + holdTime[userTuple.Key]);
 
-                    if (holdTime[userTuple.Key] < 40)
+                    if (holdTime[userTuple.Key] < ENGAGE_BAR)
                     {
                         continue;
                     }
-                    engage = true;
-                    engageUserID = userTuple.Key;
-                    
 
-                    List<ulong> keys = new List<ulong>(holdTime.Keys);
-                    foreach (var key in keys)
-                    {
-                        holdTime[key] = 0;
-                    }
-
+                    alterEngageState(true, userTuple.Key);
                     Debug.Print("Engage ");
+
                     break;
                 }
             }
@@ -110,7 +96,7 @@ namespace SingleKinect.EngagementManage
 
                 if (Math.Abs(Engager.headYaw) > 30)
                 {
-                    DisablingEngagement = true;
+                    //DisablingEngagement = true;
                     holdTime[engageUserID] += 1;
                     Debug.Print("Disengage time: " + holdTime[engageUserID]);
 
@@ -121,30 +107,73 @@ namespace SingleKinect.EngagementManage
                     DisablingEngagement = true;
                     holdTime[engageUserID] += 1;
                     Debug.Print("Disengage time: " + holdTime[engageUserID]);
-                    if (holdTime[engageUserID] < 80)
+                    if (holdTime[engageUserID] < DISENGAGE_BAR)
                     {
                         return;
                     }
-                    engage = false;
-                    engageUserID = 0;
-                    Debug.Print("Not Engage");
 
-                    List<ulong> keys = new List<ulong>(holdTime.Keys);
-                    foreach (var key in keys)
-                    {
-                        holdTime[key] = 0;
-                    }
+                    alterEngageState(false, 0);
+                    Debug.Print("Disengage");
                 }
                 else
                 {
-                    List<ulong> keys = new List<ulong>(holdTime.Keys);
-                    foreach (var key in keys)
-                    {
-                        holdTime[key] = 0;
-                    }
+                    resetHoldtime();
                     DisablingEngagement = false;
                 }
             }
+        }
+
+        private void alterEngageState(bool engageState, ulong key)
+        {
+            engage = engageState;
+            engageUserID = key;
+
+            resetHoldtime();
+        }
+
+        private void resetHoldtime()
+        {
+            List<ulong> keys = new List<ulong>(holdTime.Keys);
+            foreach (var key in keys)
+            {
+                holdTime[key] = 0;
+            }
+        }
+
+        private void clearUntrackedUser()
+        {
+            List<ulong> userKeys = new List<ulong>(users.Keys);
+            foreach (var key in userKeys)
+            {
+                if (!users[key].body.IsTracked)
+                {
+                    users.Remove(key);
+                    holdTime.Remove(key);
+                }
+            }
+        }
+
+        public void setTracker()
+        {
+            eTracker.Engager = Engager.body;
+        }
+
+        public void getTrackerInfo(out Body body, out HandState left, out HandState right, out int yaw, out int pitch,
+            out int roll)
+        {
+            body = eTracker.Engager;
+            left = eTracker.LeftState;
+            right = eTracker.RightState;
+            yaw = eTracker.Yaw;
+            pitch = eTracker.Pitch;
+            roll = eTracker.Roll;
+        }
+
+        public void setTrackerFaceOrientation(ulong trackingId)
+        {
+            eTracker.Pitch = users[trackingId].headPitch;
+            eTracker.Roll = users[trackingId].headRoll;
+            eTracker.Yaw = users[trackingId].headYaw;
         }
     }
 }

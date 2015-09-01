@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SingleKinect.Manipulation.SystemConstants.Mouse
+namespace SingleKinect.Manipulation.InputConstants.Mouse
 {
     [Flags]
     public enum MOUSEEVENTF : uint

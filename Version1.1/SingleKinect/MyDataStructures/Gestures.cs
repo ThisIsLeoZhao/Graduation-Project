@@ -1,4 +1,4 @@
-﻿namespace SingleKinect.GestureRecognise
+﻿namespace SingleKinect.MyDataStructures
 {
     public enum Gestures
     {

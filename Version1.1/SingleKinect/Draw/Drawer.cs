@@ -5,9 +5,10 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
+using SingleKinect.CoordinateConvert;
 using SingleKinect.EngagementManage;
+using SingleKinect.EngagerTrack;
 using SingleKinect.FrameProcess;
-using SingleKinect.MyUtilities;
 
 namespace SingleKinect.Draw
 {
@@ -84,14 +85,12 @@ namespace SingleKinect.Draw
 
             showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
                 body.HandRightState, body.HandLeftState);
-            faceLabel.Content = "Face Yaw Pitch Roll: " + FrameReader.Instance.yaw + ", " + FrameReader.Instance.pitch + ", " + FrameReader.Instance.roll;
-
         }
 
         //Draw engager
-        public void drawSkeleton(EngagerTracker tracker)
+        public void drawSkeleton(Body body, HandState left, HandState right, int yaw, int pitch, int roll)
         {
-            var joints = CoordinateConverter.convertJointsToDSPoints(tracker.Engager.Joints);
+            var joints = CoordinateConverter.convertJointsToDSPoints(body.Joints);
 
             drawBones(joints);
 
@@ -101,11 +100,12 @@ namespace SingleKinect.Draw
             }
 
             showHands(joints[JointType.HandRight], joints[JointType.HandLeft],
-                tracker.RightState, tracker.LeftState);
+                right, left);
 
 
-            leftLabel.Content = "HandLeftState: " + tracker.LeftState;
-            rightLabel.Content = "HandRightState: " + tracker.RightState;
+            leftLabel.Content = "HandLeftState: " + left;
+            rightLabel.Content = "HandRightState: " + right;
+            faceLabel.Content = "Face Yaw Pitch Roll: " + yaw + ", " + pitch + ", " + roll;
 
         }
 

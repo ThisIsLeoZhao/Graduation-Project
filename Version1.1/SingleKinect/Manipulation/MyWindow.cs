@@ -3,9 +3,10 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
-using SingleKinect.Manipulation.MyDataStructures;
-using SingleKinect.Manipulation.SystemConstants;
-using SingleKinect.MyUtilities;
+using SingleKinect.CoordinateConvert;
+using SingleKinect.Manipulation.InputConstants;
+using SingleKinect.MyDataStructures;
+using SingleKinect.SystemConstant;
 
 namespace SingleKinect.Manipulation
 {
@@ -19,9 +20,6 @@ namespace SingleKinect.Manipulation
 
         [DllImport("User32.dll")]
         internal static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        [DllImport("user32.dll")]
-        internal static extern int GetSystemMetrics(SystemMetric smIndex);
 
         [DllImport("User32.dll")]
         internal static extern IntPtr GetForegroundWindow();

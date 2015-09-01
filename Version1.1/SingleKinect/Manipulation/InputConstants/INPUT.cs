@@ -1,9 +1,8 @@
 ﻿using System.Runtime.InteropServices;
-using SingleKinect.Manipulation.SystemConstants;
-using SingleKinect.Manipulation.SystemConstants.Keyboard;
-using SingleKinect.Manipulation.SystemConstants.Mouse;
+using SingleKinect.Manipulation.InputConstants.Keyboard;
+using SingleKinect.Manipulation.InputConstants.Mouse;
 
-namespace SingleKinect.Manipulation.MyDataStructures
+namespace SingleKinect.Manipulation.InputConstants
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct INPUT

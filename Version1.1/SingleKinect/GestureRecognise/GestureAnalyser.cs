@@ -2,8 +2,8 @@
 using System.Diagnostics;
 using Microsoft.Kinect;
 using SingleKinect.EngagementManage;
-using SingleKinect.Manipulation.MyDataStructures;
-using SingleKinect.MyUtilities;
+using SingleKinect.EngagerTrack;
+using SingleKinect.MyDataStructures;
 
 namespace SingleKinect.GestureRecognise
 {
@@ -30,7 +30,7 @@ namespace SingleKinect.GestureRecognise
         private Joint scaleLeftBase;
         private Joint scaleRightBase;
 
-        public static double SCALE_TRIGGER;
+        public static double BLIND_RADIUS;
         public static double SCALE_SENSITIVITY;
         public static double CURSOR_SENSITIVITY;
 
@@ -45,8 +45,8 @@ namespace SingleKinect.GestureRecognise
                 return false;
             }
 
-            if (withinRange(scaleRightBase, tracker.curHandRightPoint, SCALE_TRIGGER) &&
-                    withinRange(scaleLeftBase, tracker.curHandLeftPoint, SCALE_TRIGGER))
+            if (withinRange(scaleRightBase, tracker.curHandRightPoint, BLIND_RADIUS) &&
+                    withinRange(scaleLeftBase, tracker.curHandLeftPoint, BLIND_RADIUS))
             {
                 return false;
             }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace SingleKinect.Manipulation.SystemConstants.Mouse
+namespace SingleKinect.Manipulation.InputConstants.Mouse
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct MOUSEINPUT

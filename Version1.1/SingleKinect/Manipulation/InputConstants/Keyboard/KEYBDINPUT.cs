@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace SingleKinect.Manipulation.SystemConstants.Keyboard
+namespace SingleKinect.Manipulation.InputConstants.Keyboard
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct KEYBDINPUT

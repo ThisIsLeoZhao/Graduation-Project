@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
-using System.Text;
 using Newtonsoft.Json;
-using SingleKinect.EngagementManage;
+using SingleKinect.EngagerTrack;
 
-namespace SingleKinect
+namespace SingleKinect.SendData
 {
 
     public class SendData

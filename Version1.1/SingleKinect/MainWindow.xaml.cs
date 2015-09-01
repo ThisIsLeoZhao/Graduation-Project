@@ -1,17 +1,9 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.ComponentModel;
 using System.Windows;
 using Microsoft.Kinect;
-using SingleKinect.MyUtilities;
-using System.Windows.Controls;
-using Microsoft.Kinect.Face;
 using SingleKinect.Draw;
-using SingleKinect.EngagementManage;
 using SingleKinect.FrameProcess;
-using SingleKinect.GestureRecognise;
-using SingleKinect.Manipulation;
+using SingleKinect.MyConfiguration;
 
 //using Microsoft.Kinect.VisualGestureBuilder;
 
@@ -32,12 +24,10 @@ namespace SingleKinect
         {
             InitializeComponent();
 
-            ReadConfiguration.read("../../MyConfiguration.txt");
+            ReadConfiguration.read("../../MyConfiguration/MyConfiguration.txt");
 
             drawer.bindComponents(new ComponentsArgs(leftLabel, rightLabel, bodyCanvas, engagerCanvas, faceLabel));
-//            drawer.bindComponents(new ComponentsArgs(leftLabel, rightLabel, bodyCanvas, engagerCanvas));
 
-            //dataSender.connect();
             Loaded += MainPage_Loaded;
             Closing += MainWindow_Closing;
         }
@@ -47,7 +37,6 @@ namespace SingleKinect
             sensor = KinectSensor.GetDefault();
 
             frameReader.sensor = sensor;
-            
             
             sensor.Open();
 

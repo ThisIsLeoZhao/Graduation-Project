@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SingleKinect.Manipulation.SystemConstants.Keyboard
+namespace SingleKinect.Manipulation.InputConstants.Keyboard
 {
     [Flags]
     internal enum KEYEVENTF : uint

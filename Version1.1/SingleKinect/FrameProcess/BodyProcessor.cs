@@ -87,9 +87,8 @@ namespace SingleKinect.FrameProcess
                     if (eManager.HasEngaged && eManager.Engager.body.TrackingId == faceFrameSources[i].TrackingId)
                     {
                         //Debug.Print("Engager: {0}", eManager.Engager.body.TrackingId);
-                        FrameReader.Instance.pitch = eManager.users[faceFrameSources[i].TrackingId].headPitch;
-                        FrameReader.Instance.roll = eManager.users[faceFrameSources[i].TrackingId].headRoll;
-                        FrameReader.Instance.yaw = eManager.users[faceFrameSources[i].TrackingId].headYaw;
+                        eManager.setTrackerFaceOrientation(faceFrameSources[i].TrackingId);
+                        
                     }
                 }
                 else

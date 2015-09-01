@@ -1,4 +1,4 @@
-﻿namespace SingleKinect.Manipulation.SystemConstants
+﻿namespace SingleKinect.MyDataStructures
 {
     internal enum SystemMetric
     {

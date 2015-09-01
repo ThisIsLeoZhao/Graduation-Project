@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Microsoft.Kinect;
 using SingleKinect.Manipulation;
-using SingleKinect.Manipulation.SystemConstants;
+using SingleKinect.MyDataStructures;
+using SingleKinect.SystemConstant;
 
-namespace SingleKinect.MyUtilities
+namespace SingleKinect.CoordinateConvert
 {
     public class CoordinateConverter
     {
-        private const int CURSOR_MINIMAL_MOVEMENT = 5;
+        public static double MINIMAL_BAR;
         public static double STEP_WIDTH;
         public static double STEP_HEIGHT;
 
         public static double SCROLL_SENSITIVITY;
 
-        public static int SCREEN_WIDTH = MyWindow.GetSystemMetrics(SystemMetric.SM_CXSCREEN);
-        public static int SCREEN_HEIGHT = MyWindow.GetSystemMetrics(SystemMetric.SM_CYSCREEN);
-        public static double Ex;
-        public static double Ey;
-        public static double Ez;
+        [DllImport("user32.dll")]
+        internal static extern int GetSystemMetrics(SystemMetric smIndex);
+        public static int SCREEN_WIDTH = GetSystemMetrics(SystemMetric.SM_CXSCREEN);
+        public static int SCREEN_HEIGHT = GetSystemMetrics(SystemMetric.SM_CYSCREEN);
+
         public static KinectSensor Sensor { get; set; }
         
         private static double horizontalRatio => SCREEN_WIDTH / (STEP_WIDTH * STEP_WIDTH);
@@ -31,26 +33,26 @@ namespace SingleKinect.MyUtilities
             {
                 //Debug.Print("horizontal movement: {0}", (int)(movement * Math.Abs(movement) * horizontalRatio));
                 int hDis = (int) (movement * Math.Abs(movement) * horizontalRatio);
-                if (hDis > 0 && hDis < CURSOR_MINIMAL_MOVEMENT)
+                if (hDis > 0 && hDis < MINIMAL_BAR)
                 {
-                    hDis = CURSOR_MINIMAL_MOVEMENT;
+                    hDis = (int) MINIMAL_BAR;
                 }
-                if (hDis < 0 && hDis > -CURSOR_MINIMAL_MOVEMENT)
+                if (hDis < 0 && hDis > -MINIMAL_BAR)
                 {
-                    hDis = -CURSOR_MINIMAL_MOVEMENT;
+                    hDis = (int) -MINIMAL_BAR;
                 }
 
                 return hDis;
             }
             //Debug.Print("vertical movement: {0}", (int)(movement * Math.Abs(movement) * verticalRatio));
             int vDis = (int) (movement * Math.Abs(movement) * verticalRatio);
-            if (vDis > 0 && vDis < CURSOR_MINIMAL_MOVEMENT)
+            if (vDis > 0 && vDis < MINIMAL_BAR)
             {
-                vDis = CURSOR_MINIMAL_MOVEMENT;
+                vDis = (int) MINIMAL_BAR;
             }
-            if (vDis < 0 && vDis > -CURSOR_MINIMAL_MOVEMENT)
+            if (vDis < 0 && vDis > -MINIMAL_BAR)
             {
-                vDis = -CURSOR_MINIMAL_MOVEMENT;
+                vDis = (int) -MINIMAL_BAR;
             }
 
             return vDis;

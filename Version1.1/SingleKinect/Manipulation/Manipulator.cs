@@ -1,32 +1,24 @@
 ﻿using System.Diagnostics;
 using System.Threading;
+using SingleKinect.CoordinateConvert;
 using SingleKinect.EngagementManage;
+using SingleKinect.EngagerTrack;
 using SingleKinect.GestureRecognise;
-using SingleKinect.Manipulation.MyDataStructures;
-using SingleKinect.Manipulation.SystemConstants.Mouse;
-using SingleKinect.MyUtilities;
+using SingleKinect.Manipulation.InputConstants.Mouse;
+using SingleKinect.MyDataStructures;
+using SingleKinect.SystemConstant;
 
 namespace SingleKinect.Manipulation
 {
     public class Manipulator
     {
         private readonly EngagerTracker tracker;
+        private GestureRecogniser recogniser;
 
         public Manipulator()
         {
-            tracker = null;
-        }
-
-        public Manipulator(EngagerTracker eTracker)
-        {
-            tracker = eTracker;
-        }
-
-        public void minimiseCurrentWindow()
-        {
-            var currentWindow = MyWindow.GetForegroundWindow();
-
-            MyWindow.ShowWindow(currentWindow, 6);
+            tracker = EngagerTracker.Instance;
+            recogniser = new GestureRecogniser();
         }
 
         public void scaleWindow()
@@ -59,8 +51,9 @@ namespace SingleKinect.Manipulation
             MyCursor.scrollWindow(scrollDis, tracker.IsVerticalScroll);
         }
 
-        public void reactGesture(Gestures recognisedGestures)
+        public void reactToTracker()
         {
+            Gestures recognisedGestures = recogniser.recognise();
             if (recognisedGestures != Gestures.None && recognisedGestures != Gestures.Move)
             {
                 Debug.Print("Gesture {0}", recognisedGestures);

@@ -1,4 +1,4 @@
-﻿namespace SingleKinect.Manipulation.SystemConstants.Keyboard
+﻿namespace SingleKinect.Manipulation.InputConstants.Keyboard
 {
     public enum ScanCodeShort
     {

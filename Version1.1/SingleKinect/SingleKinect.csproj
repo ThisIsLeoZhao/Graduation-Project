@@ -94,12 +94,20 @@
     <Compile Include="Draw\BoneList.cs" />
     <Compile Include="Draw\ComponentsArgs.cs" />
     <Compile Include="Draw\Drawer.cs" />
-    <Compile Include="EngagementManage\DataToSend.cs" />
+    <Compile Include="Draw\TrackerArgs.cs" />
     <Compile Include="EngagementManage\MyHuman.cs" />
+    <Compile Include="EngagerTrack\DataToSend.cs" />
+    <Compile Include="EngagerTrack\EngagerTracker.cs" />
     <Compile Include="FrameProcess\BodyProcessor.cs" />
     <Compile Include="FrameProcess\FaceProcessor.cs" />
     <Compile Include="FrameProcess\FrameReader.cs" />
-    <Compile Include="SendData.cs" />
+    <Compile Include="Manipulation\InputConstants\INPUT.cs" />
+    <Compile Include="MyDataStructures\Gestures.cs" />
+    <Compile Include="MyDataStructures\POINT.cs" />
+    <Compile Include="MyDataStructures\RECT.cs" />
+    <Compile Include="MyDataStructures\SystemMetric.cs" />
+    <Compile Include="SendData\SendData.cs" />
+    <Compile Include="SystemConstant\AdjustableProperties.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -109,32 +117,26 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EngagementManage\EngagementManager.cs" />
-    <Compile Include="EngagementManage\EngagerTracker.cs" />
     <Compile Include="GestureRecognise\GestureAnalyser.cs" />
     <Compile Include="GestureRecognise\GestureRecogniser.cs" />
-    <Compile Include="GestureRecognise\Gestures.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Manipulation\MyDataStructures\INPUT.cs" />
     <Compile Include="Manipulation\Manipulator.cs" />
     <Compile Include="Manipulation\MyCursor.cs" />
-    <Compile Include="Manipulation\MyDataStructures\POINT.cs" />
-    <Compile Include="Manipulation\MyDataStructures\RECT.cs" />
     <Compile Include="Manipulation\MyWindow.cs" />
-    <Compile Include="Manipulation\SystemConstants\HARDWAREINPUT.cs" />
-    <Compile Include="Manipulation\SystemConstants\Keyboard\KEYBDINPUT.cs" />
-    <Compile Include="Manipulation\SystemConstants\Keyboard\KEYEVENTF.cs" />
-    <Compile Include="Manipulation\SystemConstants\Keyboard\ScanCodeShort.cs" />
-    <Compile Include="Manipulation\SystemConstants\Keyboard\VirtualKeyShort.cs" />
-    <Compile Include="Manipulation\SystemConstants\Mouse\MOUSEEVENTF.cs" />
-    <Compile Include="Manipulation\SystemConstants\Mouse\MOUSEINPUT.cs" />
-    <Compile Include="Manipulation\SystemConstants\SystemMetric.cs" />
-    <Compile Include="MyUtilities\CoordinateConverter.cs" />
-    <Compile Include="MyUtilities\ReadConfiguration.cs" />
+    <Compile Include="Manipulation\InputConstants\HARDWAREINPUT.cs" />
+    <Compile Include="Manipulation\InputConstants\Keyboard\KEYBDINPUT.cs" />
+    <Compile Include="Manipulation\InputConstants\Keyboard\KEYEVENTF.cs" />
+    <Compile Include="Manipulation\InputConstants\Keyboard\ScanCodeShort.cs" />
+    <Compile Include="Manipulation\InputConstants\Keyboard\VirtualKeyShort.cs" />
+    <Compile Include="Manipulation\InputConstants\Mouse\MOUSEEVENTF.cs" />
+    <Compile Include="Manipulation\InputConstants\Mouse\MOUSEINPUT.cs" />
+    <Compile Include="CoordinateConvert\CoordinateConverter.cs" />
+    <Compile Include="MyConfiguration\ReadConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -286,7 +288,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="MyConfiguration.txt" />
     <None Include="NuiDatabase\HDFaceTracker\WholeHeadModel\FullHeadMaskVertexCorrespondence.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -335,6 +336,9 @@
     <None Include="NuiDatabase\Expression\NuiExpressionModelManifest.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Resource Include="MyConfiguration\MyConfiguration.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Content Include="Scripts\jquery-1.6.4-vsdoc.js" />
     <Content Include="Scripts\jquery-1.6.4.js" />
     <Content Include="Scripts\jquery-1.6.4.min.js" />

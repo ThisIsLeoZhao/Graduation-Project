@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Kinect;
 
-namespace SingleKinect.EngagementManage
+namespace SingleKinect.EngagerTrack
 {
     public class DataToSend
     {

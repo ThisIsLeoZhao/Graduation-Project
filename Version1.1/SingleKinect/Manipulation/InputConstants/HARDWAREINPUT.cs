@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-namespace SingleKinect.Manipulation.SystemConstants
+namespace SingleKinect.Manipulation.InputConstants
 {
     [StructLayout(LayoutKind.Sequential)]
     internal struct HARDWAREINPUT

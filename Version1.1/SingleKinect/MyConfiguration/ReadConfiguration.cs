@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using SingleKinect.GestureRecognise;
+using SingleKinect.SystemConstant;
 
-namespace SingleKinect.MyUtilities
+namespace SingleKinect.MyConfiguration
 {
     public class ReadConfiguration
     {
@@ -20,31 +20,28 @@ namespace SingleKinect.MyUtilities
 
                 switch (configuration)
                 {
-                    case "SCREEN_WIDTH":
-                        //CoordinateConverter.SCREEN_WIDTH = value;
-                        break;
-                    case "SCREEN_HEIGHT":
-                        //CoordinateConverter.SCREEN_HEIGHT = value;
-                        break;
                     case "STEP_WIDTH":
-                        CoordinateConverter.STEP_WIDTH = value;
+                        AdjustableProperties.STEP_WIDTH = value;
                         break;
                     case "STEP_HEIGHT":
-                        CoordinateConverter.STEP_HEIGHT = value;
-                        break;
-                        
-                    case "SCALE_TRIGGER":
-                        GestureAnalyser.SCALE_TRIGGER = value;
-                        break;
-                    case "CURSOR_SENSITIVITY":
-                        GestureAnalyser.CURSOR_SENSITIVITY = value;
-                        break;
-                    case "SCALE_SENSITIVITY":
-                        GestureAnalyser.SCALE_SENSITIVITY = value;
+                        AdjustableProperties.STEP_HEIGHT = value;
                         break;
                     case "SCROLL_SENSITIVITY":
-                        CoordinateConverter.SCROLL_SENSITIVITY = value;
+                        AdjustableProperties.SCROLL_SENSITIVITY = value;
                         break;
+                    case "MINIMAL_BAR":
+                        AdjustableProperties.MINIMAL_BAR = value;
+                        break;
+                    case "BLIND_RADIUS":
+                        AdjustableProperties.BLIND_RADIUS = value;
+                        break;
+                    case "CURSOR_SENSITIVITY":
+                        AdjustableProperties.CURSOR_SENSITIVITY = value;
+                        break;
+                    case "SCALE_SENSITIVITY":
+                        AdjustableProperties.SCALE_SENSITIVITY = value;
+                        break;
+                    
                     default:
                         break;
                 }

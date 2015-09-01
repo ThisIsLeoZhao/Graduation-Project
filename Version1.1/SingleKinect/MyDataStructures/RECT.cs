@@ -1,4 +1,4 @@
-﻿namespace SingleKinect.Manipulation.MyDataStructures
+﻿namespace SingleKinect.MyDataStructures
 {
     public struct RECT
     {

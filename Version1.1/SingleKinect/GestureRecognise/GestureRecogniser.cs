@@ -2,13 +2,15 @@
 using System.Diagnostics;
 using Microsoft.Kinect;
 using SingleKinect.EngagementManage;
+using SingleKinect.EngagerTrack;
+using SingleKinect.MyDataStructures;
+using SingleKinect.SystemConstant;
 
 namespace SingleKinect.GestureRecognise
 {
     public class GestureRecogniser
     {
-
-        private readonly EngagerTracker tracker;
+        private readonly EngagerTracker tracker = EngagerTracker.Instance;
         public Body Engager => tracker.Engager;
 
         private bool doubleClickReady;
@@ -18,10 +20,10 @@ namespace SingleKinect.GestureRecognise
 
         private readonly GestureAnalyser analyser = GestureAnalyser.Instance;
 
-        public GestureRecogniser(EngagerTracker eTracker)
+        public GestureRecogniser()
         {
-            tracker = eTracker;
-            analyser.tracker = eTracker;
+            //tracker = eTracker;
+            analyser.tracker = EngagerTracker.Instance;
         }
 
         public Gestures recognise()

@@ -4,11 +4,12 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.Kinect;
 using Microsoft.Kinect.Face;
+using SingleKinect.CoordinateConvert;
 using SingleKinect.Draw;
 using SingleKinect.EngagementManage;
+using SingleKinect.EngagerTrack;
 using SingleKinect.GestureRecognise;
 using SingleKinect.Manipulation;
-using SingleKinect.MyUtilities;
 
 namespace SingleKinect.FrameProcess
 {
@@ -33,9 +34,9 @@ namespace SingleKinect.FrameProcess
 
         private readonly Drawer drawer = Drawer.Instance;
         private EngagementManager eManager;
-        private EngagerTracker eTracker;
+        //private EngagerTracker eTracker;
         private Manipulator man;
-        private GestureRecogniser recogniser;
+       // private GestureRecogniser recogniser;
         private BodyFrameReader bfr;
         private BodyProcessor bodyProcessor;
 
@@ -46,17 +47,16 @@ namespace SingleKinect.FrameProcess
          
         private int bodyCount;
 
-
         private FaceProcessor faceProcessor;
-        public int pitch, yaw, roll;
+        //private EngagerTracker eTracker;
 
         public void start()
         {
-            eTracker = new EngagerTracker();
+            //eTracker = new EngagerTracker();
             eManager = new EngagementManager();
 
-            man = new Manipulator(eTracker);
-            recogniser = new GestureRecogniser(eTracker);
+            man = new Manipulator();
+            //recogniser = new GestureRecogniser();
 
             bodyProcessor = new BodyProcessor(drawer, eManager);
             faceProcessor = new FaceProcessor();
@@ -130,20 +130,21 @@ namespace SingleKinect.FrameProcess
                     return;
                 }
 
-                eTracker.Engager = eManager.Engager.body;
-                //dataSender.send(eTracker.DataToSend);
+                eManager.setTracker();
 
                 // Multithreading maybe
                 drawer.currentCanvasName = "engager";
-                drawer.drawSkeleton(eTracker);
+                Body body;
+                HandState left, right;
+                int yaw, pitch, roll;
+                eManager.getTrackerInfo(out body, out left, out right, out yaw, out pitch, out roll);
+                drawer.drawSkeleton(body, left, right, yaw, pitch, roll);
 
                 if (eManager.DisablingEngagement)
                 {
                     return;
                 }
-                var recognisedGestures = recogniser.recognise();
-
-                man.reactGesture(recognisedGestures);
+                man.reactToTracker();
             }
         }
 
