@@ -59,7 +59,7 @@ namespace SingleKinect.FrameProcess
 
                 int i = getBodyIndex(body);
                 //Debug.Print("Body {0} comes with ID {1}", i, body.TrackingId);
-
+                
                 if (faceFrameSources[i].IsTrackingIdValid)
                 {
                     // check if we have valid face frame results

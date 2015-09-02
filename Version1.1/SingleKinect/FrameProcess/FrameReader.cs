@@ -107,7 +107,7 @@ namespace SingleKinect.FrameProcess
                 if (faceFrameReaders[i] != null)
                 {
                     // wire handler for matchFaceWithBody frame arrival
-                    faceFrameReaders[i].FrameArrived += Reader_FaceFrameArrived;
+                    faceFrameReaders[i].FrameArrived += face_FrameArrived;
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace SingleKinect.FrameProcess
             }
         }
 
-        private void Reader_FaceFrameArrived(object sender, FaceFrameArrivedEventArgs e)
+        private void face_FrameArrived(object sender, FaceFrameArrivedEventArgs e)
         {
             using (FaceFrame faceFrame = e.FrameReference.AcquireFrame())
             {
