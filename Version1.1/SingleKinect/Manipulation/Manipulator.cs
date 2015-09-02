@@ -6,7 +6,6 @@ using SingleKinect.EngagerTrack;
 using SingleKinect.GestureRecognise;
 using SingleKinect.Manipulation.InputConstants.Mouse;
 using SingleKinect.MyDataStructures;
-using SingleKinect.SystemConstant;
 
 namespace SingleKinect.Manipulation
 {

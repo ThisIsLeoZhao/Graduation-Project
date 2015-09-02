@@ -4,7 +4,6 @@ using Microsoft.Kinect;
 using SingleKinect.EngagementManage;
 using SingleKinect.EngagerTrack;
 using SingleKinect.MyDataStructures;
-using SingleKinect.SystemConstant;
 
 namespace SingleKinect.GestureRecognise
 {

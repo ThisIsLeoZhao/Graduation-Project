@@ -6,7 +6,6 @@ using System.Windows;
 using SingleKinect.CoordinateConvert;
 using SingleKinect.Manipulation.InputConstants;
 using SingleKinect.MyDataStructures;
-using SingleKinect.SystemConstant;
 
 namespace SingleKinect.Manipulation
 {

@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using Microsoft.Kinect;
 using SingleKinect.Manipulation;
 using SingleKinect.MyDataStructures;
-using SingleKinect.SystemConstant;
 
 namespace SingleKinect.CoordinateConvert
 {

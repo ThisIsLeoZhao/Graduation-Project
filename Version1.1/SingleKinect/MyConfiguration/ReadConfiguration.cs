@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using SingleKinect.SystemConstant;
+using SingleKinect.ConstantDispatcher;
 
 namespace SingleKinect.MyConfiguration
 {
@@ -32,11 +32,11 @@ namespace SingleKinect.MyConfiguration
                     case "MINIMAL_BAR":
                         AdjustableProperties.MINIMAL_BAR = value;
                         break;
+                    case "SCALE_TRIGGER":
+                        AdjustableProperties.SCALE_TRIGGER = value;
+                        break;
                     case "BLIND_RADIUS":
                         AdjustableProperties.BLIND_RADIUS = value;
-                        break;
-                    case "CURSOR_SENSITIVITY":
-                        AdjustableProperties.CURSOR_SENSITIVITY = value;
                         break;
                     case "SCALE_SENSITIVITY":
                         AdjustableProperties.SCALE_SENSITIVITY = value;

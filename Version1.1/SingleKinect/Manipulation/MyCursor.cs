@@ -5,7 +5,6 @@ using SingleKinect.CoordinateConvert;
 using SingleKinect.Manipulation.InputConstants;
 using SingleKinect.Manipulation.InputConstants.Mouse;
 using SingleKinect.MyDataStructures;
-using SingleKinect.SystemConstant;
 
 namespace SingleKinect.Manipulation
 {

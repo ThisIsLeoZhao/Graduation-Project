@@ -1,20 +1,20 @@
 ﻿using SingleKinect.CoordinateConvert;
 using SingleKinect.GestureRecognise;
 
-namespace SingleKinect.SystemConstant
+namespace SingleKinect.ConstantDispatcher
 {
     public class AdjustableProperties
     {
+        public static double SCALE_TRIGGER
+        {
+            get { return GestureAnalyser.SCALE_TRIGGER; }
+            set { GestureAnalyser.SCALE_TRIGGER = value; }
+        }
+
         public static double BLIND_RADIUS
         {
             get { return GestureAnalyser.BLIND_RADIUS; }
             set { GestureAnalyser.BLIND_RADIUS = value; }
-        }
-
-        public static double CURSOR_SENSITIVITY
-        {
-            get { return GestureAnalyser.CURSOR_SENSITIVITY; }
-            set { GestureAnalyser.CURSOR_SENSITIVITY = value; }
         }
 
         public static double SCALE_SENSITIVITY

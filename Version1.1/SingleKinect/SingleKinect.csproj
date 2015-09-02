@@ -107,7 +107,7 @@
     <Compile Include="MyDataStructures\RECT.cs" />
     <Compile Include="MyDataStructures\SystemMetric.cs" />
     <Compile Include="SendData\SendData.cs" />
-    <Compile Include="SystemConstant\AdjustableProperties.cs" />
+    <Compile Include="ConstantDispatcher\AdjustableProperties.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

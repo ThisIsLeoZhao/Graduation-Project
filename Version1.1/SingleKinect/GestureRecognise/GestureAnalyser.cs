@@ -30,9 +30,9 @@ namespace SingleKinect.GestureRecognise
         private Joint scaleLeftBase;
         private Joint scaleRightBase;
 
-        public static double BLIND_RADIUS;
+        public static double SCALE_TRIGGER;
         public static double SCALE_SENSITIVITY;
-        public static double CURSOR_SENSITIVITY;
+        public static double BLIND_RADIUS;
 
         public bool tryScale()
         {
@@ -45,8 +45,8 @@ namespace SingleKinect.GestureRecognise
                 return false;
             }
 
-            if (withinRange(scaleRightBase, tracker.curHandRightPoint, BLIND_RADIUS) &&
-                    withinRange(scaleLeftBase, tracker.curHandLeftPoint, BLIND_RADIUS))
+            if (withinRange(scaleRightBase, tracker.curHandRightPoint, SCALE_TRIGGER) &&
+                    withinRange(scaleLeftBase, tracker.curHandLeftPoint, SCALE_TRIGGER))
             {
                 return false;
             }
@@ -91,7 +91,7 @@ namespace SingleKinect.GestureRecognise
 
         public bool isRealMove()
         {
-            if (withinRange(tracker.curHandRightPoint, tracker.preHandRightPoint.Value, CURSOR_SENSITIVITY))
+            if (withinRange(tracker.curHandRightPoint, tracker.preHandRightPoint.Value, BLIND_RADIUS))
             {
                 return false;
             }
